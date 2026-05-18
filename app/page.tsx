@@ -8,5 +8,5 @@ export default async function Home() {
     redirect(`/profile/${userId}`)
   }
 
-  redirect('/sign-in')
+  redirect('/auth/sign-in')
 }
