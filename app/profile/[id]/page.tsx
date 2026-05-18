@@ -10,7 +10,7 @@ export default async function ProfilePage({
   const { id } = await params
 
   if (!isAuthenticated) {
-    redirect('/signIn')
+    redirect('/sign-in')
   }
 
   return (
