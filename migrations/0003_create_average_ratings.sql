@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS average_ratings (
+    clerk_id VARCHAR(255) NOT NULL PRIMARY KEY,
+    avg_rating DECIMAL(3, 2) NOT NULL,
+    total_ratings INTEGER NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

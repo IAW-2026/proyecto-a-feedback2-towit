@@ -8,3 +8,13 @@ Esta app corresponde al módulo de reseñas y calificaciones en los proyectos de
 ---
 
 Enunciado completo: <https://iaw-2026.github.io/proyecto/>
+
+## Database migrations
+
+The project uses plain SQL migrations stored in [migrations/](migrations/). Apply them with:
+
+```bash
+pnpm migrate
+```
+
+The runner is implemented in [scripts/migrate.mjs](scripts/migrate.mjs) and records applied files in `schema_migrations`.
