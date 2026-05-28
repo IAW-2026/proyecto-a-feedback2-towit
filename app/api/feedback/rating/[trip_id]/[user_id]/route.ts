@@ -10,29 +10,30 @@ const sql = postgres(databaseUrl, { ssl: 'require' })
 
 type RouteContext = {
   params: {
-    id: string
+    trip_id: number,
+    user_id: string
   }
 }
 
 export async function GET(_request: Request, context: RouteContext) {
   const params = await context.params;
   try {
-    const rows = await sql<{ avg_rating: number }[]>`
-      SELECT avg_rating::float8 AS avg_rating
-      FROM average_ratings
-      WHERE clerk_id = ${params.id}
+    const rows = await sql<{ rating: number }[]>`
+      SELECT rating
+      FROM ratings
+      WHERE trip_id = ${params.trip_id} AND rater_clerk_id = ${params.user_id}
       LIMIT 1
     `
 
     const rating = rows[0]
 
     if (!rating) {
-      return Response.json({ error: 'Average rating not found' }, { status: 404 })
+      return Response.json({ error: 'Rating not found' }, { status: 404 })
     }
 
-    return Response.json({ avg_rating: rating.avg_rating })
+    return Response.json({ rating: rating.rating })
   } catch (error) {
-    console.error('Failed to fetch average rating', error)
+    console.error('Failed to fetch rating', error)
 
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
