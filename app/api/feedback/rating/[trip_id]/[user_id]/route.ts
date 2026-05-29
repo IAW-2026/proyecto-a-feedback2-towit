@@ -9,10 +9,10 @@ if (!databaseUrl) {
 const sql = postgres(databaseUrl, { ssl: 'require' })
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     trip_id: number,
     user_id: string
-  }
+  }>
 }
 
 export async function GET(_request: Request, context: RouteContext) {

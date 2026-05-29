@@ -9,18 +9,18 @@ if (!databaseUrl) {
 const sql = postgres(databaseUrl, { ssl: 'require' })
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-export async function GET(_request: Request, context: RouteContext) {
-  const params = await context.params;
+export async function GET(_request: Request, {params} : {params: Promise<{id: string}>}) {
+  
   try {
     const rows = await sql<{ avg_rating: number }[]>`
       SELECT avg_rating::float8 AS avg_rating
       FROM average_ratings
-      WHERE clerk_id = ${params.id}
+      WHERE clerk_id = ${(await params).id}
       LIMIT 1
     `
 
