@@ -74,6 +74,10 @@ export default async function ReportTripPage({ params }: PageProps) {
     redirect('/auth/sign-in')
   }
 
+  const clerk = await clerkClient()
+  const currentUser = await clerk.users.getUser(userId).catch(() => null)
+  const currentUserRole = currentUser?.publicMetadata?.role
+
   const { trip_id } = await params
   const tripId = Number(trip_id)
 
@@ -87,15 +91,14 @@ export default async function ReportTripPage({ params }: PageProps) {
     notFound()
   }
 
-  const isCustomer = trip.customer_id === userId
-  const isTower = trip.tower_id === userId
+  const isCustomer = currentUserRole === 'customer'
+  const isTower = currentUserRole === 'tower'
 
   if (!isCustomer && !isTower) {
     notFound()
   }
 
   const reportedClerkId = isCustomer ? trip.tower_id : trip.customer_id
-  const clerk = await clerkClient()
   const reportedUser = await clerk.users.getUser(reportedClerkId).catch(() => null)
   const reportedUserName = getDisplayName(reportedUser, reportedClerkId)
 

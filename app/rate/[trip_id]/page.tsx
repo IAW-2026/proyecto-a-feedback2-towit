@@ -45,6 +45,10 @@ export default async function RateTripPage({ params }: PageProps) {
 		redirect('/auth/sign-in')
 	}
 
+	const clerk = await clerkClient()
+	const currentUser = await clerk.users.getUser(userId).catch(() => null)
+	const currentUserRole = currentUser?.publicMetadata?.role
+
 	const { trip_id } = await params
 	const tripId = Number(trip_id)
 
@@ -58,10 +62,12 @@ export default async function RateTripPage({ params }: PageProps) {
 		notFound()
 	}
 
-	const isCustomer = trip.customer_id === userId
-	const isTower = trip.tower_id === userId
+	const isCustomer = currentUserRole === 'customer'
+	const isTower = currentUserRole === 'tower'
 
-	if (!isCustomer && !isTower) {
+	if (!isCustomer && !isTower || 
+		isCustomer && trip.customer_id !== userId || 
+		isTower && trip.tower_id !== userId) {
 		notFound()
 	}
 
@@ -70,7 +76,6 @@ export default async function RateTripPage({ params }: PageProps) {
 		? 'customer_to_tower'
 		: 'tower_to_customer'
 
-	const clerk = await clerkClient()
 	const ratedUser = await clerk.users.getUser(ratedClerkId).catch(() => null)
 	const ratedUserName = getDisplayName(ratedUser, ratedClerkId)
 	const existingRating = await getTripRatingByUser(tripId, userId)
