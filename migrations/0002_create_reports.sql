@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS reports (
     id SERIAL PRIMARY KEY,
-    trip_id VARCHAR(255) NOT NULL,
+    trip_id INTEGER NOT NULL,
     reporter_clerk_id VARCHAR(255) NOT NULL,
     reported_clerk_id VARCHAR(255) NOT NULL,
     service_id VARCHAR(255) NOT NULL,

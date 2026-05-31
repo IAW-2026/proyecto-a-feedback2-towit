@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS ratings (
     id SERIAL PRIMARY KEY,
-    trip_id VARCHAR(255) NOT NULL,
+    trip_id INTEGER NOT NULL,
     rater_clerk_id VARCHAR(255) NOT NULL,
     rated_clerk_id VARCHAR(255) NOT NULL,
     rating INTEGER NOT NULL,
