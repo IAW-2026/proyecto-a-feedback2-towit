@@ -10,7 +10,7 @@ const sql = postgres(databaseUrl, { ssl: 'require' })
 
 type RouteContext = {
   params: Promise<{
-    trip_id: number,
+    trip_id: string,
     user_id: string
   }>
 }
