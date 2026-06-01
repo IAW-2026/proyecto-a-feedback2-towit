@@ -4,10 +4,12 @@ import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getTripById } from '../../lib/queries/trips'
 import {
+	CUSTOMER_PRESET_TAGS,
 	getTripRatingByUser,
 	submitTripRating,
 	type RatingType,
 } from '../../lib/queries/ratings'
+import { CustomerTagChips } from '../../ui/customer-tag-chips'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,6 +40,13 @@ function getDisplayName(
 	)
 }
 
+function getTagLabel(slug: string | null) {
+	if (!slug) {
+		return null
+	}
+	return CUSTOMER_PRESET_TAGS.find((tag) => tag.slug === slug)?.label ?? null
+}
+
 export default async function RateTripPage({ params }: PageProps) {
 	const { userId, isAuthenticated } = await auth()
 
@@ -65,8 +74,8 @@ export default async function RateTripPage({ params }: PageProps) {
 	const isCustomer = currentUserRole === 'customer'
 	const isTower = currentUserRole === 'tower'
 
-	if (!isCustomer && !isTower || 
-		isCustomer && trip.customer_id !== userId || 
+	if (!isCustomer && !isTower ||
+		isCustomer && trip.customer_id !== userId ||
 		isTower && trip.tower_id !== userId) {
 		notFound()
 	}
@@ -79,6 +88,7 @@ export default async function RateTripPage({ params }: PageProps) {
 	const ratedUser = await clerk.users.getUser(ratedClerkId).catch(() => null)
 	const ratedUserName = getDisplayName(ratedUser, ratedClerkId)
 	const existingRating = await getTripRatingByUser(tripId, userId)
+	const existingTagLabel = getTagLabel(existingRating?.tags ?? null)
 
 	async function submitRating(formData: FormData) {
 		'use server'
@@ -96,6 +106,15 @@ export default async function RateTripPage({ params }: PageProps) {
 			throw new Error('Invalid rating value')
 		}
 
+		const rawTag = formData.get('tag')
+		const tagValue = typeof rawTag === 'string' && rawTag.length > 0 ? rawTag : null
+
+		const rawComment = formData.get('comment')
+		const commentValue =
+			typeof rawComment === 'string' && rawComment.trim().length > 0
+				? rawComment.trim().slice(0, 500)
+				: null
+
 		const alreadyRated = await getTripRatingByUser(tripId, currentUserId)
 
 		await submitTripRating({
@@ -104,6 +123,8 @@ export default async function RateTripPage({ params }: PageProps) {
 			ratedClerkId,
 			rating: ratingValue,
 			type: ratingType,
+			tags: tagValue,
+			comment: commentValue,
 		})
 
 		revalidatePath(`/history`)
@@ -154,6 +175,30 @@ export default async function RateTripPage({ params }: PageProps) {
 							<p className="mt-2 text-sm text-amber-800">
 								Saved rating: {existingRating.rating} ★
 							</p>
+							{isCustomer && (existingTagLabel || existingRating.comment) ? (
+								<div className="mt-4 space-y-3 rounded-2xl bg-white/70 p-4 ring-1 ring-amber-100">
+									{existingTagLabel ? (
+										<div>
+											<p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700">
+												Quick feedback
+											</p>
+											<p className="mt-1 text-sm font-medium text-slate-900">
+												{existingTagLabel}
+											</p>
+										</div>
+									) : null}
+									{existingRating.comment ? (
+										<div>
+											<p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700">
+												Comment
+											</p>
+											<p className="mt-1 whitespace-pre-line text-sm text-slate-800">
+												{existingRating.comment}
+											</p>
+										</div>
+									) : null}
+								</div>
+							) : null}
 							<div className="mt-6">
 								<Link
 									href="/history"
@@ -195,6 +240,40 @@ export default async function RateTripPage({ params }: PageProps) {
 									))}
 								</div>
 							</fieldset>
+
+							{isCustomer ? (
+								<>
+									<fieldset className="mt-10">
+										<legend className="text-sm font-medium text-slate-700">
+											Quick feedback
+										</legend>
+										<p className="mt-1 text-xs text-slate-500">
+											Pick the option that best describes {ratedUserName}. Click a selected option to clear it.
+										</p>
+										<CustomerTagChips name="tag" options={CUSTOMER_PRESET_TAGS} />
+									</fieldset>
+
+									<div className="mt-8">
+										<label
+											htmlFor="comment"
+											className="text-sm font-medium text-slate-700"
+										>
+											Add an opinion (optional)
+										</label>
+										<textarea
+											id="comment"
+											name="comment"
+											rows={3}
+											maxLength={500}
+											placeholder="Share anything else worth mentioning about the service…"
+											className="mt-2 block w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-200"
+										/>
+										<p className="mt-1 text-xs text-slate-500">
+											Up to 500 characters.
+										</p>
+									</div>
+								</>
+							) : null}
 
 							<div className="mt-8 flex flex-wrap items-center gap-3">
 								<button

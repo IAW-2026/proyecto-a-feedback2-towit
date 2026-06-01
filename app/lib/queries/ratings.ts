@@ -10,8 +10,25 @@ const sql = postgres(databaseUrl, { ssl: 'require' })
 
 export type RatingType = 'tower_to_customer' | 'customer_to_tower'
 
+export const CUSTOMER_PRESET_TAGS = [
+  { slug: 'polite', label: 'Polite' },
+  { slug: 'punctual', label: 'Punctual' },
+  { slug: 'took_care_of_vehicle', label: 'Took care of vehicle' },
+  { slug: 'good_communication', label: 'Good communication' },
+  { slug: 'clean_vehicle', label: 'Clean vehicle' },
+  { slug: 'professional', label: 'Professional' },
+] as const
+
+export type CustomerPresetTagSlug = (typeof CUSTOMER_PRESET_TAGS)[number]['slug']
+
+const ALLOWED_TAG_SLUGS = new Set<string>(
+  CUSTOMER_PRESET_TAGS.map((tag) => tag.slug),
+)
+
 export type ExistingTripRating = {
   rating: number
+  tags: string | null
+  comment: string | null
 }
 
 type AverageRatingRow = {
@@ -25,11 +42,47 @@ type SubmitRatingInput = {
   ratedClerkId: string
   rating: number
   type: RatingType
+  tags?: string | null
+  comment?: string | null
+}
+
+function sanitizeTag(input: string | null | undefined): string | null {
+  if (!input) {
+    return null
+  }
+
+  const trimmed = input.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  if (!ALLOWED_TAG_SLUGS.has(trimmed)) {
+    throw new Error('Invalid tag')
+  }
+
+  return trimmed
+}
+
+function sanitizeComment(input: string | null | undefined): string | null {
+  if (!input) {
+    return null
+  }
+
+  const trimmed = input.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  if (trimmed.length > 500) {
+    throw new Error('Comment too long')
+  }
+
+  return trimmed
 }
 
 export async function getTripRatingByUser(tripId: number, raterClerkId: string) {
   const rows = await sql<ExistingTripRating[]>`
-    SELECT rating
+    SELECT rating, tags, comment
     FROM ratings
     WHERE trip_id = ${tripId} AND rater_clerk_id = ${raterClerkId}
     LIMIT 1
@@ -42,6 +95,9 @@ export async function submitTripRating(input: SubmitRatingInput) {
   if (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 5) {
     throw new Error('Invalid rating value')
   }
+
+  const tags = sanitizeTag(input.tags)
+  const comment = sanitizeComment(input.comment)
 
   await sql.begin(async (transaction) => {
     const existingRatingRows = await transaction<ExistingTripRating[]>`
@@ -70,8 +126,8 @@ export async function submitTripRating(input: SubmitRatingInput) {
         ${input.raterClerkId},
         ${input.ratedClerkId},
         ${input.rating},
-        ${null},
-        ${null},
+        ${tags},
+        ${comment},
         ${input.type}
       )
     `
