@@ -1,12 +1,19 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 
 export default async function Home() {
-  const { isAuthenticated, userId } = await auth()
+  const { isAuthenticated, redirectToSignIn,  userId } = await auth()
 
-  if (isAuthenticated) {
-    redirect(`/profile/${userId}`)
+  if (!isAuthenticated) {
+    redirectToSignIn();
+  }else {
+    const client = await clerkClient()
+    const user = await client.users.getUser(userId).catch(() => redirectToSignIn())
+    if(user?.publicMetadata?.role === "admin-feedback") {
+      redirect('/admin/dashboard')
+    }
+    else{
+      redirect(`/profile/${userId}`)
+    }
   }
-
-  redirect('/auth/sign-in')
 }
