@@ -73,23 +73,27 @@ export default async function HistoryPage({
             {trips.map((trip) => (
               <li
                 key={trip.trip_id}
-                className="flex items-center justify-between py-4 first:pt-0 last:pb-0"
+                className="py-4 first:pt-0 last:pb-0"
               >
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm font-medium text-slate-900">
-                    Trip {trip.trip_id}
+                <Link
+                  href={`/rate/${trip.trip_id}`}
+                  className="flex w-full items-center justify-between text-inherit no-underline"
+                >
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-medium text-slate-900">
+                      Trip {trip.trip_id}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      {trip.type === 'tower_to_customer' ? 'You towed' : 'You were towed'}
+                      {' · '}
+                      {new Date(trip.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-900">
+                    {trip.rating} ★
                   </span>
-                  <span className="text-xs text-slate-500">
-                    {trip.type === 'tower_to_customer'
-                      ? 'You towed'
-                      : 'You were towed'}
-                    {' · '}
-                    {new Date(trip.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-900">
-                  {trip.rating} ★
-                </span>
+                </Link>
               </li>
             ))}
           </ul>
