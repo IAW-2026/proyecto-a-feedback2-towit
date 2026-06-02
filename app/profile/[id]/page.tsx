@@ -1,14 +1,6 @@
 import { auth, clerkClient } from '@clerk/nextjs/server'
-import postgres from 'postgres'
 import { notFound, redirect } from 'next/navigation'
-
-const databaseUrl = process.env.DATABASE_POSTGRES_URL
-
-if (!databaseUrl) {
-  throw new Error('DATABASE_POSTGRES_URL is not defined')
-}
-
-const sql = postgres(databaseUrl, { ssl: 'require' })
+import { sql } from '../../lib/db'
 
 export default async function ProfilePage({
   params,
