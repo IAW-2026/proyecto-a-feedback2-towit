@@ -3,12 +3,11 @@ import { sql } from '../db'
 export type RatingType = 'tower_to_customer' | 'customer_to_tower'
 
 export const CUSTOMER_PRESET_TAGS = [
-  { slug: 'polite', label: 'Polite' },
-  { slug: 'punctual', label: 'Punctual' },
-  { slug: 'took_care_of_vehicle', label: 'Took care of vehicle' },
-  { slug: 'good_communication', label: 'Good communication' },
-  { slug: 'clean_vehicle', label: 'Clean vehicle' },
-  { slug: 'professional', label: 'Professional' },
+  { slug: 'polite', label: 'Amable' },
+  { slug: 'punctual', label: 'Puntual' },
+  { slug: 'took_care_of_vehicle', label: 'Cuidadoso con el vehículo' },
+  { slug: 'good_communication', label: 'Buena comunicación' },
+  { slug: 'professional', label: 'Profesional' },
 ] as const
 
 export type CustomerPresetTagSlug = (typeof CUSTOMER_PRESET_TAGS)[number]['slug']
