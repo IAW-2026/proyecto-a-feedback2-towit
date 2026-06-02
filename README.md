@@ -1,12 +1,12 @@
 # TowIt — Feedback (Proyecto IAW 2026)
 
-Aplicación **Feedback** del [Proyecto IAW 2026](https://iaw-2026.github.io/proyecto/) — comisión `<!-- completar -->`.
+Aplicación **Feedback** de la aplicación web TowIt, del [Proyecto IAW 2026](https://iaw-2026.github.io/proyecto/) 
 
 ---
 
 ## Deploy
 
-Link al deploy de producción: `<!-- completar -->`
+Link al deploy de producción: https://proyecto-a-feedback2-towit.vercel.app/
 
 ## Usuarios de prueba
 
