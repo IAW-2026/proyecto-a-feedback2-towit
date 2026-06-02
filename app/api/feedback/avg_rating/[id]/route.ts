@@ -1,18 +1,4 @@
-import postgres from 'postgres'
-
-const databaseUrl = process.env.DATABASE_POSTGRES_URL
-
-if (!databaseUrl) {
-  throw new Error('DATABASE_POSTGRES_URL is not defined')
-}
-
-const sql = postgres(databaseUrl, { ssl: 'require' })
-
-type RouteContext = {
-  params: Promise<{
-    id: string
-  }>
-}
+import { sql } from '../../../../lib/db'
 
 export async function GET(_request: Request, {params} : {params: Promise<{id: string}>}) {
   
