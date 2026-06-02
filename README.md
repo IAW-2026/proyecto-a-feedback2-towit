@@ -25,14 +25,7 @@ La contraseña de todos los usuarios es la definida por la cátedra
 
 
 
-## Instrucciones de uso
-
-La aplicación permite cargar viajes de prueba para calificar o reportar a través del script:
-   ```bash
-   pnpm seed:trips
-   ```
-
-Sitios principales:
+## Sitios
 
 - `/` — redirecciona al sitio apropiado según sesión y rol. Si el usuario es tower/customer lo redirige a su perfil, si es un admin al dashboard de administrador.
 - `/history` — historial de viajes del usuario que aún no han sido calificados
@@ -45,6 +38,12 @@ Sitios principales:
 - `/admin/ratings/{rating_id}` — permite al administrador ver información de una calificación en particular
 - `/admin/reports` — permite al administrador acceder a todos los reportes
 - `/admin/reports/{report_id}` — permite al administrador ver información sobre un reporte, así como cambiar su estado
+
+## Instrucciones
+
+- Para calificar un viaje, acceder al historial de viajes sin calificar `/history` 
+- Para ver informacion de un viaje calificado, acceder a `/ratings-history` y hacer click en el viaje deseado
+- Para reportar un viaje, si este ya está calificado acceda a la información de dicha calificación. Si este está sin calificar, dirijáse a la página de calificación de dicho viaje, y allí tendrá la opción de reportar.
 
 ## Descripción del proyecto
 
