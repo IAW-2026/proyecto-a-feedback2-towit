@@ -90,55 +90,55 @@ export default async function AdminRatingDetailPage({ params }: PageProps) {
     getDisplayName(ratedUser, rating.ratedClerkId)
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fef3c7_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
       <div className="mx-auto max-w-3xl space-y-6">
         <Link
           href="/admin/dashboard"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
         >
           ← Volver al dashboard
         </Link>
 
-        <section className="overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
+        <section className="overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-700">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
                 Calificación #{rating.id}
               </p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+              <h1 className="mt-3 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
                 {RATING_TYPE_LABEL[rating.type]}
               </h1>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {formatDateTime(rating.createdAt)}
               </p>
             </div>
-            <div className="flex items-center gap-2 rounded-full bg-amber-50 px-5 py-2 text-amber-700 ring-1 ring-amber-100">
-              <span className="text-3xl font-semibold tracking-tight text-slate-900">
+            <div className="flex items-center gap-2 rounded-full border border-brand-yellow/30 bg-brand-yellow/10 px-5 py-2 text-brand-yellow">
+              <span className="text-3xl font-extrabold tracking-tight text-foreground">
                 {rating.rating}
               </span>
-              <span className="text-2xl">★</span>
+              <span className="text-2xl text-brand-yellow">★</span>
             </div>
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl bg-slate-50 p-5">
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+            <div className="rounded-2xl bg-muted p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Calificó
               </p>
               <Link
                 href={`/profile/${rating.raterClerkId}`}
-                className="mt-2 block text-lg font-semibold text-slate-900 hover:text-amber-700 hover:underline"
+                className="mt-2 block text-lg font-bold text-foreground hover:text-brand-yellow hover:underline"
               >
                 {raterName}
               </Link>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-5">
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+            <div className="rounded-2xl bg-muted p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Calificado
               </p>
               <Link
                 href={`/profile/${rating.ratedClerkId}`}
-                className="mt-2 block text-lg font-semibold text-slate-900 hover:text-amber-700 hover:underline"
+                className="mt-2 block text-lg font-bold text-foreground hover:text-brand-yellow hover:underline"
               >
                 {ratedName}
               </Link>
@@ -147,38 +147,38 @@ export default async function AdminRatingDetailPage({ params }: PageProps) {
 
           {rating.trip ? (
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-                <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+              <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   Viaje
                 </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">
+                <p className="mt-2 text-lg font-bold text-foreground">
                   {rating.trip.vehicle}
                 </p>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Trip #{rating.tripId}
                 </p>
               </div>
-              <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-                <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+              <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   Fecha del viaje
                 </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">
+                <p className="mt-2 text-lg font-bold text-foreground">
                   {rating.trip.date} · {rating.trip.time}
                 </p>
               </div>
             </div>
           ) : (
-            <p className="mt-6 text-sm text-slate-500">
+            <p className="mt-6 text-sm text-muted-foreground">
               Viaje no disponible (trip #{rating.tripId}).
             </p>
           )}
 
           {rating.tags ? (
             <div className="mt-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Tag
               </p>
-              <p className="mt-2 inline-flex rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700 ring-1 ring-amber-100">
+              <p className="mt-2 inline-flex rounded-full bg-brand-yellow/10 px-3 py-1 text-sm font-semibold text-brand-yellow ring-1 ring-brand-yellow/20">
                 {rating.tags.replace(/_/g, ' ')}
               </p>
             </div>
@@ -186,10 +186,10 @@ export default async function AdminRatingDetailPage({ params }: PageProps) {
 
           {rating.comment ? (
             <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Comentario
               </p>
-              <p className="mt-2 whitespace-pre-line rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-800">
+              <p className="mt-2 whitespace-pre-line rounded-2xl bg-muted p-4 text-sm leading-6 text-foreground">
                 {rating.comment}
               </p>
             </div>

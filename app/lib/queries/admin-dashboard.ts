@@ -350,6 +350,10 @@ export async function getReportDetailById(
 
   const trip = await getTripById(row.trip_id)
 
+   if (!trip) {
+    return null
+  }
+
   return {
     id: row.id,
     tripId: row.trip_id,
@@ -359,13 +363,12 @@ export async function getReportDetailById(
     reporterClerkId: row.reporter_clerk_id,
     reportedClerkId: row.reported_clerk_id,
     createdAt: row.created_at.toISOString(),
-    trip: trip
-      ? {
+    trip: {
           vehicle: trip.vehicle,
           date: trip.date,
           time: trip.time,
         }
-      : null,
+      
   }
 }
 

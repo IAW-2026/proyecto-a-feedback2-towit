@@ -12,15 +12,15 @@ import {
 
 export const dynamic = 'force-dynamic'
 
-const REASON_LABEL: Record<string, string> = {
-  unsafe_driving_or_towing: 'Unsafe driving or towing',
-  no_show_or_abandoned_trip: 'No-show or abandoned trip',
-  inappropriate_behavior: 'Inappropriate behavior',
-  vehicle_or_trip_mismatch: 'Vehicle or trip mismatch',
-  other: 'Other',
+export const REASON_LABEL: Record<string, string> = {
+  unsafe_driving_or_towing: 'Conducción o remolque inseguro',
+  no_show_or_abandoned_trip: 'No se presentó o abandonó el viaje',
+  inappropriate_behavior: 'Comportamiento inapropiado',
+  vehicle_or_trip_mismatch: 'Vehículo o viaje no coincidente',
+  other: 'Otro',
 }
 
-const STATUS_LABEL: Record<EditableReportStatus, string> = {
+export const STATUS_LABEL: Record<EditableReportStatus, string> = {
   unresolved: 'Sin resolver',
   dismissed: 'Descartado',
   considered: 'Considerado',
@@ -32,12 +32,25 @@ const ALLOWED_STATUSES: ReadonlyArray<EditableReportStatus> = [
   'considered',
 ]
 
+const DARK_STATUS_TONE: Record<string, string> = {
+  unresolved: 'bg-rose-500/10 text-rose-300 ring-rose-500/20',
+  considered: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/20',
+  dismissed: 'bg-muted text-muted-foreground ring-border',
+  resolved: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/20',
+  pending: 'bg-amber-500/10 text-amber-300 ring-amber-500/20',
+  in_review: 'bg-sky-500/10 text-sky-300 ring-sky-500/20',
+}
+
 function getReasonLabel(reason: string): string {
   return REASON_LABEL[reason] ?? reason.replace(/_/g, ' ')
 }
 
 function getStatusTone(status: string): string {
-  return REPORT_STATUS_TONE[status] ?? 'bg-slate-100 text-slate-700 ring-slate-200'
+  return (
+    DARK_STATUS_TONE[status] ??
+    REPORT_STATUS_TONE[status] ??
+    'bg-muted text-muted-foreground ring-border'
+  )
 }
 
 function formatDateTime(iso: string): string {
@@ -131,25 +144,25 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fee2e2_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
       <div className="mx-auto max-w-3xl space-y-6">
         <Link
           href="/admin/reports"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
         >
           ← Volver a reportes
         </Link>
 
-        <section className="overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
+        <section className="overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-rose-700">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-400">
                 Reporte #{report.id}
               </p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+              <h1 className="mt-3 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
                 {getReasonLabel(report.reason)}
               </h1>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-muted-foreground">
                 {formatDateTime(report.createdAt)}
               </p>
             </div>
@@ -162,24 +175,24 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl bg-slate-50 p-5">
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+            <div className="rounded-2xl bg-muted p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Reportó
               </p>
               <Link
                 href={`/profile/${report.reporterClerkId}`}
-                className="mt-2 block text-lg font-semibold text-slate-900 hover:text-rose-700 hover:underline"
+                className="mt-2 block text-lg font-bold text-foreground hover:text-rose-400 hover:underline"
               >
                 {reporterName}
               </Link>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-5">
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+            <div className="rounded-2xl bg-muted p-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Reportado
               </p>
               <Link
                 href={`/profile/${report.reportedClerkId}`}
-                className="mt-2 block text-lg font-semibold text-slate-900 hover:text-rose-700 hover:underline"
+                className="mt-2 block text-lg font-bold text-foreground hover:text-rose-400 hover:underline"
               >
                 {reportedName}
               </Link>
@@ -188,49 +201,49 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
 
           {report.trip ? (
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-                <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+              <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   Viaje
                 </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">
+                <p className="mt-2 text-lg font-bold text-foreground">
                   {report.trip.vehicle}
                 </p>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Trip #{report.tripId}
                 </p>
               </div>
-              <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-                <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+              <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   Fecha del viaje
                 </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">
+                <p className="mt-2 text-lg font-bold text-foreground">
                   {report.trip.date} · {report.trip.time}
                 </p>
               </div>
             </div>
           ) : (
-            <p className="mt-6 text-sm text-slate-500">
+            <p className="mt-6 text-sm text-muted-foreground">
               Viaje no disponible (trip #{report.tripId}).
             </p>
           )}
 
           {report.description ? (
             <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Descripción
               </p>
-              <p className="mt-2 whitespace-pre-line rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-800">
+              <p className="mt-2 whitespace-pre-line rounded-2xl bg-muted p-4 text-sm leading-6 text-foreground">
                 {report.description}
               </p>
             </div>
           ) : null}
         </section>
 
-        <section className="overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur">
-          <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+        <section className="overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-bold tracking-tight text-foreground">
             Cambiar estado
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {isUnresolved
               ? 'Marcá este reporte como descartado o como considerado.'
               : 'Volvé a abrir el reporte para que vuelva a estar sin resolver.'}
@@ -243,7 +256,7 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
                   <input type="hidden" name="status" value="dismissed" />
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-full bg-slate-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    className="inline-flex items-center justify-center rounded-lg border-2 border-border bg-muted px-5 py-2.5 text-sm font-semibold text-foreground transition hover:bg-card active:scale-95"
                   >
                     Marcar como descartado
                   </button>
@@ -252,7 +265,7 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
                   <input type="hidden" name="status" value="considered" />
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                    className="inline-flex items-center justify-center rounded-lg bg-emerald-500/20 px-5 py-2.5 text-sm font-semibold text-emerald-300 ring-1 ring-emerald-500/30 transition hover:bg-emerald-500/30 active:scale-95"
                   >
                     Marcar como considerado
                   </button>
@@ -263,7 +276,7 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
                 <input type="hidden" name="status" value="unresolved" />
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center rounded-full border border-rose-200 bg-white px-5 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
+                  className="inline-flex items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 px-5 py-2.5 text-sm font-semibold text-rose-300 transition hover:bg-rose-500/20"
                 >
                   Reabrir (volver a sin resolver)
                 </button>

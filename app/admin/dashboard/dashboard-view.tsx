@@ -18,25 +18,31 @@ const RATING_TYPE_LABEL: Record<RatingType, string> = {
   customer_to_tower: 'Customer → Tower',
 }
 
-const REASON_LABEL: Record<string, string> = {
-  unsafe_driving_or_towing: 'Unsafe driving or towing',
-  no_show_or_abandoned_trip: 'No-show or abandoned trip',
-  inappropriate_behavior: 'Inappropriate behavior',
-  vehicle_or_trip_mismatch: 'Vehicle or trip mismatch',
-  other: 'Other',
+export const REASON_LABEL: Record<string, string> = {
+  unsafe_driving_or_towing: 'Conducción o remolque inseguro',
+  no_show_or_abandoned_trip: 'No se presentó o abandonó el viaje',
+  inappropriate_behavior: 'Comportamiento inapropiado',
+  vehicle_or_trip_mismatch: 'Vehículo o viaje no coincidente',
+  other: 'Otro',
+}
+
+export const STATUS_LABEL: Record<string, string> = {
+  unresolved: 'Sin resolver',
+  dismissed: 'Descartado',
+  considered: 'Considerado',
 }
 
 const STATUS_TONE: Record<string, string> = {
-  unresolved: 'bg-rose-50 text-rose-700 ring-rose-100',
-  considered: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
-  dismissed: 'bg-slate-100 text-slate-700 ring-slate-200',
-  resolved: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
-  pending: 'bg-amber-50 text-amber-700 ring-amber-100',
-  in_review: 'bg-sky-50 text-sky-700 ring-sky-100',
+  unresolved: 'bg-rose-500/10 text-rose-300 ring-rose-500/20',
+  considered: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/20',
+  dismissed: 'bg-muted text-muted-foreground ring-border',
+  resolved: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/20',
+  pending: 'bg-amber-500/10 text-amber-300 ring-amber-500/20',
+  in_review: 'bg-sky-500/10 text-sky-300 ring-sky-500/20',
 }
 
 function getStatusTone(status: string): string {
-  return STATUS_TONE[status] ?? 'bg-slate-100 text-slate-700 ring-slate-200'
+  return STATUS_TONE[status] ?? 'bg-muted text-muted-foreground ring-border'
 }
 
 function formatAverage(value: number | null): string {
@@ -89,26 +95,35 @@ function StatCard({
   accent?: 'amber' | 'rose' | 'sky' | 'emerald'
 }) {
   const accentRing: Record<NonNullable<typeof accent>, string> = {
-    amber: 'ring-amber-200/60',
-    rose: 'ring-rose-200/60',
-    sky: 'ring-sky-200/60',
-    emerald: 'ring-emerald-200/60',
+    amber: 'border-brand-yellow/30',
+    rose: 'border-rose-500/30',
+    sky: 'border-sky-500/30',
+    emerald: 'border-emerald-500/30',
   }
 
-  const ring = accent ? accentRing[accent] : 'ring-slate-200/60'
+  const accentText: Record<NonNullable<typeof accent>, string> = {
+    amber: 'text-brand-yellow',
+    rose: 'text-rose-300',
+    sky: 'text-sky-300',
+    emerald: 'text-emerald-300',
+  }
+
+  const border = accent ? accentRing[accent] : 'border-border'
 
   return (
     <div
-      className={`rounded-2xl bg-white/90 p-6 shadow-sm ring-1 ${ring} backdrop-blur`}
+      className={`rounded-2xl border ${border} bg-card p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md`}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
+      <p
+        className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${accent ? accentText[accent] : 'text-muted-foreground'}`}
+      >
         {label}
       </p>
-      <p className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">
+      <p className="mt-3 text-4xl font-extrabold tracking-tight text-foreground">
         {value}
       </p>
       {hint ? (
-        <p className="mt-2 text-xs font-medium text-slate-500">{hint}</p>
+        <p className="mt-2 text-xs font-medium text-muted-foreground">{hint}</p>
       ) : null}
     </div>
   )
@@ -125,32 +140,32 @@ function RatingRow({
   const ratedName = displayNames[rating.ratedClerkId] ?? rating.ratedClerkId
 
   return (
-    <li className="border-b border-slate-100 last:border-b-0">
+    <li className="border-b border-border last:border-b-0">
       <Link
         href={`/admin/ratings/${rating.id}`}
-        className="flex flex-col gap-3 py-4 transition first:pt-0 last:pb-0 hover:bg-amber-50/40 -mx-2 px-2 rounded-xl"
+        className="flex flex-col gap-3 py-4 transition first:pt-0 last:pb-0 hover:bg-brand-yellow/[0.04] -mx-2 px-2 rounded-xl"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-sm">
-              <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 ring-1 ring-amber-100">
+              <span className="mt-1 rounded-full bg-brand-yellow/10 px-2.5 py-0.5 text-xs font-semibold text-brand-yellow ring-1 ring-brand-yellow/20">
                 {RATING_TYPE_LABEL[rating.type]}
               </span>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-muted-foreground">
                 {formatDateTime(rating.createdAt)}
               </span>
             </div>
-            <p className="mt-2 text-sm font-medium text-slate-900">
+            <p className="mt-2 text-sm font-medium text-foreground">
               <span>{raterName}</span>
-              <span className="px-1 text-slate-400">→</span>
+              <span className="px-1 text-muted-foreground">→</span>
               <span>{ratedName}</span>
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-1 text-amber-500">
-            <span className="text-lg font-semibold tracking-tight text-slate-900">
+          <div className="flex shrink-0 items-center gap-1">
+            <span className="text-lg font-semibold tracking-tight text-foreground">
               {rating.rating}
             </span>
-            <span className="text-base">★</span>
+            <span className="text-base text-brand-yellow">★</span>
           </div>
         </div>
       </Link>
@@ -171,35 +186,35 @@ function ReportRow({
     displayNames[report.reportedClerkId] ?? report.reportedClerkId
 
   return (
-    <li className="border-b border-slate-100 last:border-b-0">
+    <li className="border-b border-border last:border-b-0">
       <Link
         href={`/admin/reports/${report.id}`}
-        className="flex flex-col gap-3 py-4 transition first:pt-0 last:pb-0 hover:bg-rose-50/40 -mx-2 px-2 rounded-xl"
+        className="flex flex-col gap-3 py-4 transition first:pt-0 last:pb-0 hover:bg-rose-500/[0.04] -mx-2 px-2 rounded-xl"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-sm">
               <span
                 className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${getStatusTone(
-                  report.status,
+                  STATUS_LABEL[report.status] || report.status
                 )}`}
               >
-                {report.status.replace(/_/g, ' ')}
+                {STATUS_LABEL[report.status] || report.status.replace(/_/g, ' ')}
               </span>
-              <span className="text-xs font-medium text-slate-700">
+              <span className="text-xs font-medium text-foreground">
                 {getReasonLabel(report.reason)}
               </span>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-muted-foreground">
                 {formatDateTime(report.createdAt)}
               </span>
             </div>
-            <p className="mt-2 text-sm font-medium text-slate-900">
+            <p className="mt-2 text-sm font-medium text-foreground">
               <span>{reporterName}</span>
-              <span className="px-1 text-slate-400">→</span>
+              <span className="px-1 text-muted-foreground">→</span>
               <span>{reportedName}</span>
             </p>
           </div>
-          <span className="shrink-0 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700 ring-1 ring-rose-100">
+          <span className="shrink-0 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-300 ring-1 ring-rose-500/20">
             Trip #{report.tripId}
           </span>
         </div>
@@ -291,38 +306,38 @@ export function DashboardView({ initial }: { initial: DashboardSnapshot }) {
 
   const statusDotClass = useMemo(() => {
     if (isPaused) {
-      return 'bg-slate-400'
+      return 'bg-slate-500'
     }
     switch (pollStatus) {
       case 'fetching':
-        return 'bg-sky-500'
+        return 'bg-sky-400'
       case 'error':
-        return 'bg-rose-500'
+        return 'bg-rose-400'
       case 'idle':
       default:
-        return 'bg-emerald-500'
+        return 'bg-emerald-400'
     }
   }, [pollStatus, isPaused])
 
   const { stats, latestRatings, latestReports, displayNames } = snapshot
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fef3c7_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
       <div className="mx-auto max-w-6xl space-y-8">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-700">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
               Admin
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+            <h1 className="mt-2 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
               Feedback dashboard
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600">
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
               Resumen de la última semana y actividad reciente de
               calificaciones y reportes.
             </p>
           </div>
-          <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-medium text-slate-600 shadow-sm backdrop-blur">
+          <div className="flex items-center gap-3 rounded-full border border-border bg-card px-4 py-2 text-xs font-medium text-muted-foreground shadow-sm">
             <span
               className={`relative inline-flex h-2.5 w-2.5 items-center justify-center rounded-full ${statusDotClass}`}
               aria-hidden
@@ -334,20 +349,20 @@ export function DashboardView({ initial }: { initial: DashboardSnapshot }) {
               ) : null}
             </span>
             <span className="uppercase tracking-[0.18em]">{statusText}</span>
-            <span className="text-slate-300">·</span>
+            <span className="text-muted-foreground/60">·</span>
             <span>Actualizado {formatClockTime(snapshot.generatedAt)}</span>
           </div>
         </header>
 
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            label="Calificaciones (7d)"
+            label="Calificaciones"
             value={stats.ratingsCount.toLocaleString()}
             accent="amber"
             hint="Última semana"
           />
           <StatCard
-            label="Reportes (7d)"
+            label="Reportes"
             value={stats.reportsCount.toLocaleString()}
             accent="rose"
             hint="Última semana"
@@ -356,28 +371,25 @@ export function DashboardView({ initial }: { initial: DashboardSnapshot }) {
             label="Promedio recibido por Customers"
             value={formatAverage(stats.avgRatingToCustomers)}
             accent="sky"
-            hint="Ratings tower_to_customer (7d)"
+            hint="Última semana"
           />
           <StatCard
             label="Promedio recibido por Towers"
             value={formatAverage(stats.avgRatingToTowers)}
             accent="emerald"
-            hint="Ratings customer_to_tower (7d)"
+            hint="Última semana"
           />
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-3xl border border-white/70 bg-white/85 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+              <h2 className="text-lg font-bold tracking-tight text-foreground">
                 Últimas calificaciones
               </h2>
-              <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-                Top {latestRatings.length}
-              </span>
             </div>
             {latestRatings.length === 0 ? (
-              <p className="mt-6 text-sm text-slate-500">
+              <p className="mt-6 text-sm text-muted-foreground">
                 Aún no hay calificaciones registradas.
               </p>
             ) : (
@@ -393,17 +405,14 @@ export function DashboardView({ initial }: { initial: DashboardSnapshot }) {
             )}
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-white/70 bg-white/85 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+              <h2 className="text-lg font-bold tracking-tight text-foreground">
                 Últimos reportes
               </h2>
-              <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-                Top {latestReports.length}
-              </span>
             </div>
             {latestReports.length === 0 ? (
-              <p className="mt-6 text-sm text-slate-500">
+              <p className="mt-6 text-sm text-muted-foreground">
                 No hay reportes registrados.
               </p>
             ) : (

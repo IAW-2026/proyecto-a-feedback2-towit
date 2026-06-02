@@ -30,17 +30,17 @@ export default async function HistoryPage({ searchParams }: PageProps) {
 
   if (role !== 'customer' && role !== 'tower') {
     return (
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fef3c7_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
+      <main className="min-h-screen bg-background px-6 py-10 text-foreground">
         <div className="mx-auto max-w-3xl">
-          <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-700">
-              Trip history
+          <section className="overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-sm">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
+              Historial de viajes
             </p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-              No trips to rate
+            <h1 className="mt-3 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
+              Sin viajes para calificar
             </h1>
-            <p className="mt-4 text-sm leading-6 text-slate-600 sm:text-base">
-              Your account doesn&apos;t have trips associated with it yet.
+            <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base">
+              Su cuenta no tiene viajes asociados aún.
             </p>
           </section>
         </div>
@@ -67,47 +67,47 @@ export default async function HistoryPage({ searchParams }: PageProps) {
   const showEmptyState = items.length === 0
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fef3c7_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
       <div className="mx-auto max-w-3xl space-y-6">
         <header className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-700">
-              Pending ratings
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
+              Calificaciones pendientes
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-              Rate your recent trips
+            <h1 className="mt-2 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
+              Califica tus viajes recientes
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-              These trips don&apos;t have a rating from you yet. Share your
-              feedback to help the community.
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+              Estos viajes aún no tienen una calificación de tu parte. Comparte tu
+              feedback para ayudar a la comunidad.
             </p>
           </div>
           <Link
             href="/ratings-history"
-            className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-amber-200 hover:text-amber-700"
+            className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground shadow-sm transition hover:border-brand-yellow/40 hover:text-brand-yellow"
           >
-            View past ratings →
+            Ver historial →
           </Link>
         </header>
 
         {showEmptyState ? (
-          <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
-            <p className="text-lg font-semibold text-slate-900">
-              You&apos;re all caught up!
+          <section className="overflow-hidden rounded-2xl border border-border bg-card p-10 text-center shadow-sm">
+            <p className="text-lg font-bold text-foreground">
+              ¡Estás al día!
             </p>
-            <p className="mt-2 text-sm text-slate-600">
-              No trips are waiting for your rating right now.
+            <p className="mt-2 text-sm text-muted-foreground">
+              No hay viajes esperando tu calificación en este momento.
             </p>
             <Link
               href="/ratings-history"
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="mt-6 inline-flex items-center justify-center rounded-lg bg-brand-yellow px-6 py-3 text-sm font-bold text-black transition hover:bg-brand-yellow-hover active:scale-95"
             >
-              View past ratings
+              Ver historial de calificaciones
             </Link>
           </section>
         ) : (
-          <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
-            <ul className="divide-y divide-slate-100">
+          <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <ul className="divide-y divide-border">
               {items.map((trip) => {
                 const counterpartName =
                   displayNames[trip.counterpart_clerk_id] ??
@@ -123,21 +123,21 @@ export default async function HistoryPage({ searchParams }: PageProps) {
                     className="flex flex-wrap items-center justify-between gap-4 px-6 py-5"
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-bold text-foreground">
                         {trip.vehicle}
                       </p>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
+                      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         {roleLabel} {counterpartName}
                       </p>
-                      <p className="mt-1 text-sm text-slate-600">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         {trip.date} · {trip.time}
                       </p>
                     </div>
                     <Link
                       href={`/rate/${trip.trip_id}`}
-                      className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                      className="inline-flex items-center justify-center rounded-lg bg-brand-yellow px-5 py-2.5 text-sm font-bold text-black transition hover:bg-brand-yellow-hover active:scale-95"
                     >
-                      Rate trip
+                      Calificar viaje
                     </Link>
                   </li>
                 )
@@ -151,24 +151,24 @@ export default async function HistoryPage({ searchParams }: PageProps) {
             {currentPage > 1 ? (
               <Link
                 href={`/history?page=${currentPage - 1}`}
-                className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 font-medium text-slate-700 transition hover:border-amber-200 hover:text-amber-700"
+                className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
-                ← Previous
+                ← Anterior
               </Link>
             ) : (
               <span />
             )}
 
-            <span className="text-slate-500">
-              Page {currentPage} of {totalPages}
+            <span className="text-muted-foreground">
+              Página {currentPage} de {totalPages}
             </span>
 
             {currentPage < totalPages ? (
               <Link
                 href={`/history?page=${currentPage + 1}`}
-                className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 font-medium text-slate-700 transition hover:border-amber-200 hover:text-amber-700"
+                className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
-                Next →
+                Siguiente →
               </Link>
             ) : (
               <span />

@@ -130,67 +130,67 @@ export default async function RateTripPage({ params }: PageProps) {
 	}
 
 	return (
-		<main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fef3c7_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
-			<div className="mx-auto max-w-3xl">
+		<main className="min-h-screen bg-background px-6 py-10 text-foreground">
+			<div className="mx-auto max-w-3xl space-y-6">
 				<Link
 					href={existingRating ? "/ratings-history" : "/history"}
-					className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
+					className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
 				>
-					← Back to history
+					← Volver al historial
 				</Link>
 
-				<section className="mt-6 overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
-					<p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-700">
-						Rate trip
+				<section className="overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-sm">
+					<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
+						Calificar viaje
 					</p>
-					<h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-						How was your trip?
+					<h1 className="mt-3 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
+						¿Cómo fue tu viaje?
 					</h1>
-					<p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-						You are rating {ratedUserName}. Select one to five stars and submit your feedback.
+					<p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+						Estás calificando a {ratedUserName}. Selecciona de una a cinco estrellas y envía tu feedback.
 					</p>
 
-					<div className="mt-8 grid gap-4 rounded-3xl bg-slate-50 p-5 sm:grid-cols-2">
-						<div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-							<p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
-								Vehicle
+					<div className="mt-8 grid gap-4 rounded-2xl bg-muted p-5 sm:grid-cols-2">
+						<div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border">
+							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+								Vehículo
 							</p>
-							<p className="mt-2 text-lg font-semibold text-slate-900">{trip.vehicle}</p>
+							<p className="mt-2 text-lg font-bold text-foreground">{trip.vehicle}</p>
 						</div>
-						<div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-							<p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
-								Trip date
+						<div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border">
+							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+								Fecha del viaje
 							</p>
-							<p className="mt-2 text-lg font-semibold text-slate-900">
+							<p className="mt-2 text-lg font-bold text-foreground">
 								{trip.date} · {trip.time}
 							</p>
 						</div>
 					</div>
 
 					{existingRating ? (
-						<div className="mt-10 rounded-3xl border border-amber-200 bg-amber-50 p-6">
-							<p className="text-sm font-medium text-amber-900">You already rated this trip.</p>
-							<p className="mt-2 text-sm text-amber-800">
-								Saved rating: {existingRating.rating} ★
+						<div className="mt-10 rounded-2xl border border-brand-yellow/30 bg-brand-yellow/5 p-6">
+							<p className="text-sm font-bold text-brand-yellow">Ya calificaste este viaje.</p>
+							<p className="mt-2 text-sm text-brand-yellow/80">
+								Calificación: {existingRating.rating} <span className="text-brand-yellow">★</span>
 							</p>
 							{isCustomer && (existingTagLabel || existingRating.comment) ? (
-								<div className="mt-4 space-y-3 rounded-2xl bg-white/70 p-4 ring-1 ring-amber-100">
+								<div className="mt-4 space-y-3 rounded-2xl bg-card p-4 ring-1 ring-brand-yellow/20">
 									{existingTagLabel ? (
 										<div>
-											<p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700">
-												Quick feedback
+											<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
+												Feedback rápido
 											</p>
-											<p className="mt-1 text-sm font-medium text-slate-900">
+											<p className="mt-1 text-sm font-bold text-foreground">
 												{existingTagLabel}
 											</p>
 										</div>
 									) : null}
 									{existingRating.comment ? (
 										<div>
-											<p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700">
-												Comment
+											<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
+												Comentario
 											</p>
-											<p className="mt-1 whitespace-pre-line text-sm text-slate-800">
+											<p className="mt-1 whitespace-pre-line text-sm text-foreground">
 												{existingRating.comment}
 											</p>
 										</div>
@@ -200,15 +200,15 @@ export default async function RateTripPage({ params }: PageProps) {
 							<div className="mt-6 flex flex-wrap items-center gap-3">
 								<Link
 									href="/history"
-									className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+									className="inline-flex items-center justify-center rounded-lg bg-brand-yellow px-6 py-3 text-sm font-bold text-black transition hover:bg-brand-yellow-hover active:scale-95"
 								>
-									Back to history
+									Volver al historial
 								</Link>
 								<Link
 									href={`/report/${tripId}`}
-									className="inline-flex items-center justify-center rounded-full border border-red-200 bg-white px-6 py-3 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-50"
+									className="inline-flex items-center justify-center rounded-lg border-2 border-rose-500/30 bg-rose-500/10 px-6 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-500/50 hover:bg-rose-500/20"
 								>
-									Report this trip
+									Reportar este viaje
 								</Link>
 							</div>
 						</div>
@@ -219,8 +219,8 @@ export default async function RateTripPage({ params }: PageProps) {
 							<input type="hidden" name="type" value={ratingType} />
 
 							<fieldset>
-								<legend className="text-sm font-medium text-slate-700">
-									Choose a rating
+								<legend className="text-sm font-bold text-foreground">
+									Elige una calificación
 								</legend>
 								<div className="mt-4 flex flex-wrap items-end gap-3">
 									{[1, 2, 3, 4, 5].map((value) => (
@@ -235,11 +235,11 @@ export default async function RateTripPage({ params }: PageProps) {
 											/>
 											<label
 												htmlFor={`rating-${value}`}
-												className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white text-3xl text-slate-300 shadow-sm transition hover:-translate-y-0.5 hover:border-amber-200 hover:text-amber-400 peer-checked:border-amber-300 peer-checked:bg-amber-50 peer-checked:text-amber-500"
+												className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-2xl border border-border bg-card text-3xl text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-brand-yellow/40 hover:text-brand-yellow peer-checked:border-brand-yellow peer-checked:bg-brand-yellow/10 peer-checked:text-brand-yellow"
 											>
 												★
 											</label>
-											<span className="text-xs font-medium text-slate-500">{value}</span>
+											<span className="text-xs font-medium text-muted-foreground">{value}</span>
 										</div>
 									))}
 								</div>
@@ -248,11 +248,11 @@ export default async function RateTripPage({ params }: PageProps) {
 							{isCustomer ? (
 								<>
 									<fieldset className="mt-10">
-										<legend className="text-sm font-medium text-slate-700">
-											Quick feedback
+										<legend className="text-sm font-bold text-foreground">
+											Feedback rápido
 										</legend>
-										<p className="mt-1 text-xs text-slate-500">
-											Pick the option that best describes {ratedUserName}. Click a selected option to clear it.
+										<p className="mt-1 text-xs text-muted-foreground">
+											Elige la opción que mejor describa a {ratedUserName}. Haz clic en una opción seleccionada para borrarla.
 										</p>
 										<CustomerTagChips name="tag" options={CUSTOMER_PRESET_TAGS} />
 									</fieldset>
@@ -260,9 +260,9 @@ export default async function RateTripPage({ params }: PageProps) {
 									<div className="mt-8">
 										<label
 											htmlFor="comment"
-											className="text-sm font-medium text-slate-700"
+											className="text-sm font-bold text-foreground"
 										>
-											Add an opinion (optional)
+											Agregar opinión (opcional)
 										</label>
 										<textarea
 											id="comment"
@@ -270,10 +270,10 @@ export default async function RateTripPage({ params }: PageProps) {
 											rows={3}
 											maxLength={500}
 											placeholder="Share anything else worth mentioning about the service…"
-											className="mt-2 block w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-200"
+											className="mt-2 block w-full resize-y rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground shadow-sm transition placeholder:text-muted-foreground focus:border-brand-yellow focus:outline-none focus:ring-2 focus:ring-brand-yellow/40"
 										/>
-										<p className="mt-1 text-xs text-slate-500">
-											Up to 500 characters.
+										<p className="mt-1 text-xs text-muted-foreground">
+											Máximo 500 caracteres.
 										</p>
 									</div>
 								</>
@@ -282,19 +282,16 @@ export default async function RateTripPage({ params }: PageProps) {
 							<div className="mt-8 flex flex-wrap items-center gap-3">
 								<button
 									type="submit"
-									className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+									className="inline-flex items-center justify-center rounded-lg bg-brand-yellow px-6 py-3 text-sm font-bold text-black transition hover:bg-brand-yellow-hover active:scale-95"
 								>
-									Submit rating
+									Enviar calificación
 								</button>
 								<Link
 									href={`/report/${tripId}`}
-									className="inline-flex items-center justify-center rounded-full border border-red-200 bg-white px-6 py-3 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-50"
+									className="inline-flex items-center justify-center rounded-lg border-2 border-rose-500/30 bg-rose-500/10 px-6 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-500/50 hover:bg-rose-500/20"
 								>
-									Report this trip
+									Reportar este viaje
 								</Link>
-								<span className="text-sm text-slate-500">
-									Your rating will update the average automatically.
-								</span>
 							</div>
 						</form>
 					)}

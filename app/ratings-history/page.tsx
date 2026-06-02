@@ -1,5 +1,4 @@
 import { auth } from '@clerk/nextjs/server'
-import postgres from 'postgres'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { sql } from '../lib/db'
@@ -48,80 +47,87 @@ export default async function HistoryPage({
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-10 text-slate-900">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="text-sm font-medium uppercase tracking-[0.3em] text-slate-500">
-          Ratings history
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-          Trip History
-        </h1>
-
-        {trips.length === 0 ? (
-          <p className="mt-10 text-center text-slate-500">
-            No trips found.
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
+      <div className="mx-auto max-w-3xl space-y-6">
+        <header>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
+            Historial de calificaciones
           </p>
-        ) : (
-          <ul className="mt-8 divide-y divide-slate-100">
-            {trips.map((trip) => (
-              <li
-                key={trip.trip_id}
-                className="py-4 first:pt-0 last:pb-0"
-              >
-                <Link
-                  href={`/rate/${trip.trip_id}`}
-                  className="flex w-full items-center justify-between text-inherit no-underline"
+          <h1 className="mt-2 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
+            Calificaciones recientes
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Todas las calificaciones que enviaste.
+          </p>
+        </header>
+
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          {trips.length === 0 ? (
+            <p className="px-6 py-10 text-center text-sm text-muted-foreground">
+              No has calificado ningún viaje aún.
+            </p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {trips.map((trip) => (
+                <li
+                  key={trip.trip_id}
+                  className="px-6 py-4 first:pt-6 last:pb-6"
                 >
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm font-medium text-slate-900">
-                      Trip {trip.trip_id}
-                    </span>
-                    <span className="text-xs text-slate-500">
-                      {trip.type === 'tower_to_customer' ? 'You towed' : 'You were towed'}
-                      {' · '}
-                      {new Date(trip.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
+                  <Link
+                    href={`/rate/${trip.trip_id}`}
+                    className="flex w-full items-center justify-between text-inherit no-underline"
+                  >
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm font-bold text-foreground">
+                        Trip {trip.trip_id}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {trip.type === 'tower_to_customer' ? 'Remolcaste' : 'Fue remolcado'}
+                        {' · '}
+                        {new Date(trip.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
 
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-900">
-                    {trip.rating} ★
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
+                    <span className="rounded-full border border-border bg-muted px-3 py-1 text-sm font-bold text-foreground">
+                      {trip.rating} <span className="text-brand-yellow">★</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
-        {totalPages > 1 && (
-          <nav className="mt-8 flex items-center justify-between text-sm">
+        {totalPages > 1 ? (
+          <nav className="flex items-center justify-between text-sm">
             {currentPage > 1 ? (
               <Link
                 href={`/ratings-history?page=${currentPage - 1}`}
-                className="rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
-                ← Previous
+                ← Anterior
               </Link>
             ) : (
               <span />
             )}
 
-            <span className="text-slate-500">
-              Page {currentPage} of {totalPages}
+            <span className="text-muted-foreground">
+              Página {currentPage} de {totalPages}
             </span>
 
             {currentPage < totalPages ? (
               <Link
                 href={`/ratings-history?page=${currentPage + 1}`}
-                className="rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
-                Next →
+                Siguiente →
               </Link>
             ) : (
               <span />
             )}
           </nav>
-        )}
+        ) : null}
       </div>
-    </div>
+    </main>
   )
 }

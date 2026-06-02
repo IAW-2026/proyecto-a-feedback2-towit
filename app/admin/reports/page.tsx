@@ -21,12 +21,25 @@ const REASON_LABEL: Record<string, string> = {
   other: 'Other',
 }
 
+const DARK_STATUS_TONE: Record<string, string> = {
+  unresolved: 'bg-rose-500/10 text-rose-300 ring-rose-500/20',
+  considered: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/20',
+  dismissed: 'bg-muted text-muted-foreground ring-border',
+  resolved: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/20',
+  pending: 'bg-amber-500/10 text-amber-300 ring-amber-500/20',
+  in_review: 'bg-sky-500/10 text-sky-300 ring-sky-500/20',
+}
+
 function getReasonLabel(reason: string): string {
   return REASON_LABEL[reason] ?? reason.replace(/_/g, ' ')
 }
 
 function getStatusTone(status: string): string {
-  return REPORT_STATUS_TONE[status] ?? 'bg-slate-100 text-slate-700 ring-slate-200'
+  return (
+    DARK_STATUS_TONE[status] ??
+    REPORT_STATUS_TONE[status] ??
+    'bg-muted text-muted-foreground ring-border'
+  )
 }
 
 function formatDateTime(iso: string): string {
@@ -74,33 +87,33 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
   const lastItemIndex = Math.min(offset + reports.length, totalCount)
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fee2e2_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
       <div className="mx-auto max-w-4xl space-y-6">
         <Link
           href="/admin/dashboard"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
         >
           ← Volver al dashboard
         </Link>
 
         <header>
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-rose-700">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-400">
             Admin
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className="mt-2 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
             Reportes
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Listado completo de reportes registrados en el sistema.
           </p>
         </header>
 
-        <section className="overflow-hidden rounded-3xl border border-white/70 bg-white/90 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
-            <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4">
+            <h2 className="text-lg font-bold tracking-tight text-foreground">
               Todos los reportes
             </h2>
-            <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {totalCount === 0
                 ? 'Sin resultados'
                 : `Mostrando ${firstItemIndex}–${lastItemIndex} de ${totalCount}`}
@@ -108,7 +121,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
           </div>
 
           {reports.length === 0 ? (
-            <p className="px-6 py-10 text-center text-sm text-slate-500">
+            <p className="px-6 py-10 text-center text-sm text-muted-foreground">
               Aún no hay reportes registrados.
             </p>
           ) : (
@@ -123,11 +136,11 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
                 return (
                   <li
                     key={report.id}
-                    className="border-b border-slate-100 last:border-b-0"
+                    className="mt-2 mb-1 border-b border-border last:border-b-0"
                   >
                     <Link
                       href={`/admin/reports/${report.id}`}
-                      className="flex flex-col gap-3 py-4 transition first:pt-0 last:pb-0 hover:bg-rose-50/40 -mx-2 px-2 rounded-xl"
+                      className="flex flex-col gap-3 py-4 transition first:pt-0 last:pb-0 hover:bg-rose-500/[0.04] -mx-2 px-2 rounded-xl"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -137,20 +150,20 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
                             >
                               {report.status.replace(/_/g, ' ')}
                             </span>
-                            <span className="text-xs font-medium text-slate-700">
+                            <span className="text-xs font-medium text-foreground">
                               {getReasonLabel(report.reason)}
                             </span>
-                            <span className="text-xs text-slate-500">
+                            <span className="text-xs text-muted-foreground">
                               {formatDateTime(report.createdAt)}
                             </span>
                           </div>
-                          <p className="mt-2 text-sm font-medium text-slate-900">
+                          <p className="mt-2 text-sm font-medium text-foreground">
                             <span>{reporterName}</span>
-                            <span className="px-1 text-slate-400">→</span>
+                            <span className="px-1 text-muted-foreground">→</span>
                             <span>{reportedName}</span>
                           </p>
                         </div>
-                        <span className="shrink-0 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700 ring-1 ring-rose-100">
+                        <span className="shrink-0 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-300 ring-1 ring-rose-500/20">
                           Trip #{report.tripId}
                         </span>
                       </div>
@@ -162,11 +175,11 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
           )}
 
           {totalPages > 1 ? (
-            <nav className="flex items-center justify-between gap-3 border-t border-slate-100 px-6 py-4 text-sm">
+            <nav className="flex items-center justify-between gap-3 border-t border-border px-6 py-4 text-sm">
               {safePage > 1 ? (
                 <Link
                   href={`/admin/reports?page=${safePage - 1}`}
-                  className="rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50"
+                  className="rounded-lg border border-border bg-muted px-4 py-2 font-medium text-foreground transition hover:bg-card"
                 >
                   ← Anterior
                 </Link>
@@ -174,14 +187,14 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
                 <span />
               )}
 
-              <span className="text-slate-500">
+              <span className="text-muted-foreground">
                 Página {safePage} de {totalPages}
               </span>
 
               {safePage < totalPages ? (
                 <Link
                   href={`/admin/reports?page=${safePage + 1}`}
-                  className="rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50"
+                  className="rounded-lg border border-border bg-muted px-4 py-2 font-medium text-foreground transition hover:bg-card"
                 >
                   Siguiente →
                 </Link>

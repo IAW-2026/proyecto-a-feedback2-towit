@@ -6,17 +6,17 @@ import { usePathname } from 'next/navigation'
 import { UserButton, useUser } from '@clerk/nextjs'
 
 const navLinkClass = (active: boolean) =>
-	`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition ${
+	`inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 ${
 		active
-			? 'bg-slate-950 text-white shadow-sm'
-			: 'text-slate-700 hover:bg-slate-100'
+			? 'bg-muted text-foreground'
+			: 'text-muted-foreground hover:bg-muted hover:text-foreground'
 	}`
 
 export function Topbar() {
 	const pathname = usePathname()
 	const { user, isLoaded } = useUser()
 
-	if (pathname.startsWith('/auth') ||  pathname === '/') {
+	if (pathname.startsWith('/auth') || pathname === '/') {
 		return null
 	}
 
@@ -30,23 +30,26 @@ export function Topbar() {
 	const onRatingsHistory = pathname.startsWith('/ratings-history')
 
 	return (
-		<header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur">
-			<div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
+		<header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
+			<div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
 				<div className="flex items-center gap-6">
-					<div className="flex items-center gap-2">
+					<Link
+						href={isAdmin ? '/admin/dashboard' : user ? `/profile/${user.id}` : '/'}
+						className="flex items-center gap-3"
+					>
 						<Image
 							src="/images/2.svg"
 							alt="TowIt logo"
-							width={32}
-							height={32}
-							className="h-8 w-8"
+							width={40}
+							height={40}
+							className="h-8 w-auto md:h-10"
 							priority
 						/>
-						<span className="text-base font-semibold tracking-tight text-slate-900">
+						<span className="hidden text-xl font-bold text-foreground md:inline md:text-2xl">
 							TowIt Feedback
 						</span>
-					</div>
-					<nav className="flex items-center gap-2">
+					</Link>
+					<nav className="flex items-center gap-1">
 						{isAdmin ? (
 							<>
 								<Link
@@ -74,23 +77,29 @@ export function Topbar() {
 									href={user ? `/profile/${user.id}` : '/'}
 									className={navLinkClass(onProfile)}
 								>
-									Profile
+									Perfil
 								</Link>
 								<Link href="/history" className={navLinkClass(onHistory)}>
-									History
+									Viajes
 								</Link>
 								<Link
 									href="/ratings-history"
 									className={navLinkClass(onRatingsHistory)}
 								>
-									Ratings history
+									Calificaciones
 								</Link>
 							</>
 						)}
 					</nav>
 				</div>
 				<div className="flex items-center">
-					{isLoaded && user ? <UserButton /> : null}
+					{isLoaded && user ? (
+						<UserButton
+							appearance={{
+								elements: { userButtonAvatarBox: '!h-9 !w-9 md:!h-10 md:!w-10' },
+							}}
+						/>
+					) : null}
 				</div>
 			</div>
 		</header>

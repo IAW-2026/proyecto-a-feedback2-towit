@@ -45,35 +45,41 @@ export default async function ProfilePage({
   const last15Average = last15Ratings[0]?.avg_rating
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-10 text-slate-900">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <p className="text-sm font-medium uppercase tracking-[0.3em] text-slate-500">
-          Profile
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-          {displayName}
-        </h1>
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
+      <div className="mx-auto max-w-3xl space-y-6">
+        <section className="overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-yellow">
+            Perfil de usuario
+          </p>
+          <h1 className="mt-3 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
+            {displayName}
+          </h1>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <section className="rounded-2xl bg-slate-50 p-6">
-            <p className="text-sm font-medium text-slate-500">Historical average</p>
-            <p className="mt-3 text-4xl font-semibold text-slate-900">
-              {historicalAverage === null || historicalAverage === undefined
-                ? 'N/A'
-                : historicalAverage.toFixed(2)}
-            </p>
-          </section>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <section className="rounded-2xl bg-muted p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Promedio histórico de calificaciones
+              </p>
+              <p className="mt-3 text-4xl font-extrabold tracking-tight text-foreground">
+                {historicalAverage === null || historicalAverage === undefined
+                  ? 'N/A'
+                  : historicalAverage.toFixed(2)}
+              </p>
+            </section>
 
-          <section className="rounded-2xl bg-slate-50 p-6">
-            <p className="text-sm font-medium text-slate-500">Last 15 trips</p>
-            <p className="mt-3 text-4xl font-semibold text-slate-900">
-              {last15Average === null || last15Average === undefined
-                ? 'N/A'
-                : last15Average.toFixed(2)}
-            </p>
-          </section>
-        </div>
+            <section className="rounded-2xl bg-muted p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Últimas 15 calificaciones
+              </p>
+              <p className="mt-3 text-4xl font-extrabold tracking-tight text-foreground">
+                {last15Average === null || last15Average === undefined
+                  ? 'N/A'
+                  : last15Average.toFixed(2)}
+              </p>
+            </section>
+          </div>
+        </section>
       </div>
-    </div>
+    </main>
   )
 }

@@ -42,28 +42,28 @@ const reportReasonOptions: Array<{
 }> = [
   {
     value: 'unsafe_driving_or_towing',
-    label: 'Unsafe driving or towing',
-    description: 'Dangerous behavior during the trip or towing process.',
+    label: 'Conducción o remolque inseguro',
+    description: 'Comportamiento peligroso durante el viaje o el proceso de remolque.',
   },
   {
     value: 'no_show_or_abandoned_trip',
-    label: 'No-show or abandoned trip',
-    description: 'The other user did not appear or left the trip unfinished.',
+    label: 'No se presentó o abandonó el viaje',
+    description: 'El otro usuario no apareció o dejó el viaje sin terminar.',
   },
   {
     value: 'inappropriate_behavior',
-    label: 'Inappropriate behavior',
-    description: 'Harassment, abuse, or another unacceptable interaction.',
+    label: 'Comportamiento inapropiado',
+    description: 'Acoso, abuso o otra interacción inaceptable.',
   },
   {
     value: 'vehicle_or_trip_mismatch',
-    label: 'Vehicle or trip mismatch',
-    description: 'The vehicle, service, or trip details did not match.',
+    label: 'Vehículo o viaje no coincidente',
+    description: 'El vehículo o los detalles del viaje no coinciden con lo acordado.',
   },
   {
     value: 'other',
-    label: 'Other',
-    description: 'Any other issue that does not fit the options above.',
+    label: 'Otro',
+    description: 'Cualquier otro problema que no se ajuste a las opciones anteriores.',
   },
 ]
 
@@ -137,39 +137,39 @@ export default async function ReportTripPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fee2e2_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
-      <div className="mx-auto max-w-3xl">
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
+      <div className="mx-auto max-w-3xl space-y-6">
         <Link
           href="/history"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
         >
-          ← Back to history
+          ← Volver al historial
         </Link>
 
-        <section className="mt-6 overflow-hidden rounded-[2rem] border border-white/70 bg-white/90 p-8 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-red-700">
-            Report trip
+        <section className="overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-400">
+            Reportar viaje
           </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            Report {reportedUserName}
+          <h1 className="mt-3 text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-1.5px] leading-tight text-foreground">
+            Reportar a {reportedUserName}
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-            Select the reason that best matches the issue and add an optional description.
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+            Selecciona el motivo por el cual estás reportando este viaje. Puedes agregar una descripción adicional para proporcionar más detalles sobre el incidente.
           </p>
 
-          <div className="mt-8 grid gap-4 rounded-3xl bg-slate-50 p-5 sm:grid-cols-2">
-            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+          <div className="mt-8 grid gap-4 rounded-2xl bg-muted p-5 sm:grid-cols-2">
+            <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Trip
               </p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">#{trip.trip_id}</p>
+              <p className="mt-2 text-lg font-bold text-foreground">#{trip.trip_id}</p>
             </div>
-            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
-                Trip details
+            <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Detalles del viaje
               </p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">{trip.vehicle}</p>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-2 text-lg font-bold text-foreground">{trip.vehicle}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
                 {trip.date} · {trip.time}
               </p>
             </div>
@@ -177,27 +177,27 @@ export default async function ReportTripPage({ params }: PageProps) {
 
           <form action={submitReport} className="mt-10 space-y-8">
             <fieldset>
-              <legend className="text-sm font-medium text-slate-700">
-                Reason for report
+              <legend className="text-sm font-bold text-foreground">
+                Motivo del reporte
               </legend>
               <div className="mt-4 grid gap-3">
                 {reportReasonOptions.map((option) => (
                   <label
                     key={option.value}
-                    className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-red-200 hover:bg-red-50/40"
+                    className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-rose-500/40 hover:bg-rose-500/5"
                   >
                     <input
                       type="radio"
                       name="reason"
                       value={option.value}
                       required
-                      className="mt-1 h-4 w-4 border-slate-300 text-red-600 focus:ring-red-500"
+                      className="mt-1 h-4 w-4 border-border bg-card text-rose-500 focus:ring-rose-500"
                     />
                     <span className="flex flex-col">
-                      <span className="text-sm font-semibold text-slate-900">
+                      <span className="text-sm font-bold text-foreground">
                         {option.label}
                       </span>
-                      <span className="text-sm text-slate-500">{option.description}</span>
+                      <span className="text-sm text-muted-foreground">{option.description}</span>
                     </span>
                   </label>
                 ))}
@@ -205,27 +205,24 @@ export default async function ReportTripPage({ params }: PageProps) {
             </fieldset>
 
             <label className="block">
-              <span className="text-sm font-medium text-slate-700">
-                Optional description
+              <span className="text-sm font-bold text-foreground">
+                Descripción opcional
               </span>
               <textarea
                 name="description"
                 rows={5}
-                placeholder="Add any extra details that could help review this report."
-                className="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-red-300 focus:ring-4 focus:ring-red-100"
+                placeholder="Agrega cualquier detalle adicional que pueda ayudar a revisar este reporte."
+                className="mt-3 w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground shadow-sm outline-none transition placeholder:text-muted-foreground focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20"
               />
             </label>
 
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="inline-flex items-center justify-center rounded-lg bg-brand-yellow px-6 py-3 text-sm font-bold text-black transition hover:bg-brand-yellow-hover active:scale-95"
               >
-                Submit report
+                Enviar reporte
               </button>
-              <span className="text-sm text-slate-500">
-                The report will be created with status unresolved.
-              </span>
             </div>
           </form>
         </section>
