@@ -115,8 +115,6 @@ export default async function RateTripPage({ params }: PageProps) {
 				? rawComment.trim().slice(0, 500)
 				: null
 
-		const alreadyRated = await getTripRatingByUser(tripId, currentUserId)
-
 		await submitTripRating({
 			tripId,
 			raterClerkId: currentUserId,
@@ -135,7 +133,7 @@ export default async function RateTripPage({ params }: PageProps) {
 		<main className="min-h-screen bg-[radial-gradient(circle_at_top,_#fef3c7_0,_#fff7ed_28%,_#f8fafc_70%)] px-6 py-10 text-slate-900">
 			<div className="mx-auto max-w-3xl">
 				<Link
-					href="/history"
+					href={existingRating ? "/ratings-history" : "/history"}
 					className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-slate-900"
 				>
 					← Back to history
@@ -199,12 +197,18 @@ export default async function RateTripPage({ params }: PageProps) {
 									) : null}
 								</div>
 							) : null}
-							<div className="mt-6">
+							<div className="mt-6 flex flex-wrap items-center gap-3">
 								<Link
 									href="/history"
 									className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
 								>
 									Back to history
+								</Link>
+								<Link
+									href={`/report/${tripId}`}
+									className="inline-flex items-center justify-center rounded-full border border-red-200 bg-white px-6 py-3 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-50"
+								>
+									Report this trip
 								</Link>
 							</div>
 						</div>
@@ -282,6 +286,12 @@ export default async function RateTripPage({ params }: PageProps) {
 								>
 									Submit rating
 								</button>
+								<Link
+									href={`/report/${tripId}`}
+									className="inline-flex items-center justify-center rounded-full border border-red-200 bg-white px-6 py-3 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-50"
+								>
+									Report this trip
+								</Link>
 								<span className="text-sm text-slate-500">
 									Your rating will update the average automatically.
 								</span>
