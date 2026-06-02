@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS ratings (
     tags TEXT,
     comment TEXT,
     type TEXT NOT NULL CHECK (type IN ('tower_to_customer', 'customer_to_tower')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

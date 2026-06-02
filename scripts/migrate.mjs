@@ -1,14 +1,62 @@
 import postgres from 'postgres';
 import { readFile, readdir } from 'node:fs/promises';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const migrationsDir = resolve(projectRoot, 'migrations');
-const databaseUrl = process.env.DATABASE_POSTGRES_URL;
+
+// Carga variables desde un archivo .env* en process.env sin pisar las que ya están
+// definidas en el entorno. Soporta comentarios, líneas vacías y valores entre comillas.
+function loadEnvFile(filePath) {
+    if (!existsSync(filePath)) {
+        return;
+    }
+
+    const content = readFileSync(filePath, 'utf8');
+
+    for (const rawLine of content.split(/\r?\n/)) {
+        const line = rawLine.trim();
+
+        if (!line || line.startsWith('#')) {
+            continue;
+        }
+
+        const eqIdx = line.indexOf('=');
+
+        if (eqIdx === -1) {
+            continue;
+        }
+
+        const key = line.slice(0, eqIdx).trim();
+
+        if (!key) {
+            continue;
+        }
+
+        let value = line.slice(eqIdx + 1).trim();
+
+        if (
+            (value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))
+        ) {
+            value = value.slice(1, -1);
+        }
+
+        if (!(key in process.env)) {
+            process.env[key] = value;
+        }
+    }
+}
+
+loadEnvFile(resolve(projectRoot, '.env.local'));
+loadEnvFile(resolve(projectRoot, '.env'));
+
+const databaseUrl = process.env.POSTGRES_URL;
 
 if (!databaseUrl) {
-    throw new Error('DATABASE_POSTGRES_URL is not defined');
+    throw new Error('POSTGRES_URL is not defined');
 }
 
 const sql = postgres(databaseUrl, { ssl: 'require' });

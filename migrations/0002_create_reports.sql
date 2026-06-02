@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS reports (
     reason TEXT NOT NULL,
     description TEXT,
     status VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

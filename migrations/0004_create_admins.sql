@@ -1,5 +1,0 @@
-CREATE TABLE IF NOT EXISTS admins (
-    id SERIAL PRIMARY KEY,
-    clerk_id VARCHAR(255) NOT NULL,
-    full_name VARCHAR(255) NOT NULL
-);
