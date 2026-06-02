@@ -62,13 +62,13 @@ export function Topbar() {
 									href="/admin/ratings"
 									className={navLinkClass(onAdminRatings)}
 								>
-									Ratings
+									Calificaciones
 								</Link>
 								<Link
 									href="/admin/reports"
 									className={navLinkClass(onAdminReports)}
 								>
-									Reports
+									Reportes
 								</Link>
 							</>
 						) : (
