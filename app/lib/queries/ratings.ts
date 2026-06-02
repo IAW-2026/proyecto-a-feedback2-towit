@@ -1,12 +1,4 @@
-import postgres from 'postgres'
-
-const databaseUrl = process.env.DATABASE_POSTGRES_URL
-
-if (!databaseUrl) {
-  throw new Error('DATABASE_POSTGRES_URL is not defined')
-}
-
-const sql = postgres(databaseUrl, { ssl: 'require' })
+import { sql } from '../db'
 
 export type RatingType = 'tower_to_customer' | 'customer_to_tower'
 
