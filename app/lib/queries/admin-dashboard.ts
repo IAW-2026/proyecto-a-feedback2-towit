@@ -406,7 +406,7 @@ export async function getRatingDetailById(id: number): Promise<RatingDetail | nu
     return null
   }
 
-  const trip = await getTripById(id);
+  const trip = await getTripById(row.trip_id);
 
   return {
     id: row.id,
