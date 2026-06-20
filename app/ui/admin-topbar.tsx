@@ -12,22 +12,19 @@ const navLinkClass = (active: boolean) =>
 			: 'text-muted-foreground hover:bg-muted hover:text-foreground'
 	}`
 
-export function Topbar() {
+export function AdminTopbar() {
 	const pathname = usePathname()
 	const { user, isLoaded } = useUser()
 
-	const onProfile = pathname.startsWith('/profile')
-	const onHistory = pathname.startsWith('/history')
-	const onRatingsHistory = pathname.startsWith('/ratings-history')
+	const onAdminDashboard = pathname === '/admin/dashboard'
+	const onAdminRatings = pathname.startsWith('/admin/ratings')
+	const onAdminReports = pathname.startsWith('/admin/reports')
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
 			<div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
 				<div className="flex items-center gap-6">
-					<Link
-						href={user ? `/profile/${user.id}` : '/'}
-						className="flex items-center gap-3"
-					>
+					<Link href="/admin/dashboard" className="flex items-center gap-3">
 						<Image
 							src="/images/2.svg"
 							alt="TowIt logo"
@@ -41,20 +38,14 @@ export function Topbar() {
 						</span>
 					</Link>
 					<nav className="flex items-center gap-1">
-						<Link
-							href={user ? `/profile/${user.id}` : '/'}
-							className={navLinkClass(onProfile)}
-						>
-							Perfil
+						<Link href="/admin/dashboard" className={navLinkClass(onAdminDashboard)}>
+							Dashboard
 						</Link>
-						<Link href="/history" className={navLinkClass(onHistory)}>
-							Viajes
-						</Link>
-						<Link
-							href="/ratings-history"
-							className={navLinkClass(onRatingsHistory)}
-						>
+						<Link href="/admin/ratings" className={navLinkClass(onAdminRatings)}>
 							Calificaciones
+						</Link>
+						<Link href="/admin/reports" className={navLinkClass(onAdminReports)}>
+							Reportes
 						</Link>
 					</nav>
 				</div>
