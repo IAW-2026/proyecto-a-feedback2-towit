@@ -69,6 +69,7 @@ export default async function AdminRatingDetailPage({ params }: PageProps) {
   const rating = await getRatingDetailById(ratingId)
 
   if (!rating) {
+    console.log("rating not found")
     notFound()
   }
 

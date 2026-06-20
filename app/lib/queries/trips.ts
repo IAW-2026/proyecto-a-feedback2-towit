@@ -1,49 +1,35 @@
-import { sql } from '../db'
+import { getTripRatingByUser } from './ratings'
 
 export type TripRow = {
   trip_id: number
   customer_id: string
   tower_id: string
-  vehicle: string
+  vehicle_id: string
+  origin: {lat: string, long: string}
+  destination: {lat: string, long: string}
   date: string
   time: string
+  status: string
 }
 
 export type UserTripRole = 'customer' | 'tower'
 
-export type PendingTripItem = {
-  trip_id: number
-  vehicle: string
-  date: string
-  time: string
-  counterpart_clerk_id: string
-  user_role_in_trip: UserTripRole
+
+export async function getTripById(tripId: number, userId: string) : Promise<TripRow | null> {
+  const trips = await getUserTrips(userId)
+  const trip = trips.find((t: TripRow) => Number(t.trip_id) === tripId)
+  return trip ?? null
 }
 
-type PendingTripRow = {
-  trip_id: number
-  vehicle: string
-  date: string
-  time: string
-  counterpart_clerk_id: string
-  user_role_in_trip: UserTripRole
-}
-
-export async function getTripById(tripId: number) {
-  const rows = await sql<TripRow[]>`
-    SELECT
-      trip_id,
-      customer_id,
-      tower_id,
-      vehicle,
-      date::text AS date,
-      time::text AS time
-    FROM trips
-    WHERE trip_id = ${tripId}
-    LIMIT 1
-  `
-
-  return rows[0] ?? null
+async function getUserTrips(userId: string): Promise<TripRow[]> {
+  const tripsApiUrl = process.env.TRIPS_API_URL
+  if (!tripsApiUrl) {
+  throw new Error('TRIPS_API_URL is not defined')
+  }
+  const response = await fetch(`${tripsApiUrl}/${userId}`, {method: 'GET'})
+  const trips = await response.json()
+  console.log('Fetched trips:', trips)
+  return trips
 }
 
 // Devuelve los viajes en los que participó el usuario (como customer o tower,
@@ -54,9 +40,20 @@ export async function getUserPendingTrips(params: {
   role: UserTripRole
   limit: number
   offset: number
-}): Promise<{ items: PendingTripItem[]; total: number }> {
-  const { userId, role, limit, offset } = params
+}): Promise<{ items: TripRow[]; total: number }> {
 
+
+
+  
+  const { userId } = params
+  const trips = await getUserTrips(userId)
+  const pendingTrips = trips.filter((trip: TripRow) => {
+    return getTripRatingByUser(trip.trip_id, userId) != null
+  })
+  return {items: pendingTrips, total: pendingTrips.length}
+
+
+  /*
   const [rows, countRows] = await Promise.all([
     sql<PendingTripRow[]>`
       SELECT
@@ -104,5 +101,5 @@ export async function getUserPendingTrips(params: {
   return {
     items: rows,
     total: countRows[0]?.count ?? 0,
-  }
+  }*/
 }

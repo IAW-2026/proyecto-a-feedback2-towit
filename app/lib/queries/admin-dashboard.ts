@@ -119,7 +119,7 @@ export type RatingDetail = {
   ratedClerkId: string
   createdAt: string
   trip: {
-    vehicle: string
+    vehicle: number
     date: string
     time: string
   } | null
@@ -348,7 +348,7 @@ export async function getReportDetailById(
     return null
   }
 
-  const trip = await getTripById(row.trip_id)
+  const trip = await getTripById(row.trip_id, row.reporter_clerk_id)
 
    if (!trip) {
     return null
@@ -364,7 +364,7 @@ export async function getReportDetailById(
     reportedClerkId: row.reported_clerk_id,
     createdAt: row.created_at.toISOString(),
     trip: {
-          vehicle: trip.vehicle,
+          vehicle: trip.vehicle_id,
           date: trip.date,
           time: trip.time,
         }
@@ -406,7 +406,10 @@ export async function getRatingDetailById(id: number): Promise<RatingDetail | nu
     return null
   }
 
-  const trip = await getTripById(row.trip_id);
+  const trip = await getTripById(row.trip_id, row.rater_clerk_id);
+  if (!trip) {
+    return null
+  }
 
   return {
     id: row.id,
@@ -419,7 +422,7 @@ export async function getRatingDetailById(id: number): Promise<RatingDetail | nu
     ratedClerkId: row.rated_clerk_id,
     createdAt: row.created_at.toISOString(),
     trip: {
-      vehicle: trip.vehicle,
+      vehicle: trip.trip_id,
       date: trip.date,
       time: trip.date,
     }
