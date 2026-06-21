@@ -161,7 +161,7 @@ export default async function RateTripPage({ params }: PageProps) {
 								Fecha del viaje
 							</p>
 							<p className="mt-2 text-lg font-bold text-foreground">
-								{trip.date} · {trip.time}
+								{trip.date}
 							</p>
 						</div>
 					</div>

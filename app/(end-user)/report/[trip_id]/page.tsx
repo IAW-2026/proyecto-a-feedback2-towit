@@ -170,7 +170,7 @@ export default async function ReportTripPage({ params }: PageProps) {
               </p>
               <p className="mt-2 text-lg font-bold text-foreground">{trip.vehicle}</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                {trip.date} · {trip.time}
+                {trip.date}
               </p>
             </div>
           </div>
