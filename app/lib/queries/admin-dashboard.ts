@@ -52,7 +52,6 @@ export type ReportDetail = {
   trip: {
     vehicle: string
     date: string
-    time: string
   } | null
 }
 
@@ -364,9 +363,8 @@ export async function getReportDetailById(
     reportedClerkId: row.reported_clerk_id,
     createdAt: row.created_at.toISOString(),
     trip: {
-          vehicle: trip.vehicle_id,
+          vehicle: trip.vehicle,
           date: trip.date,
-          time: trip.time,
         }
       
   }

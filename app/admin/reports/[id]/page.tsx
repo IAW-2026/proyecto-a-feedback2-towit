@@ -217,7 +217,7 @@ export default async function AdminReportDetailPage({ params }: PageProps) {
                   Fecha del viaje
                 </p>
                 <p className="mt-2 text-lg font-bold text-foreground">
-                  {report.trip.date} · {report.trip.time}
+                  {report.trip.date}
                 </p>
               </div>
             </div>
