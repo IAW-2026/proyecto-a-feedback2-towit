@@ -168,7 +168,7 @@ export default async function ReportTripPage({ params }: PageProps) {
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Detalles del viaje
               </p>
-              <p className="mt-2 text-lg font-bold text-foreground">{trip.vehicle_id}</p>
+              <p className="mt-2 text-lg font-bold text-foreground">{trip.vehicle}</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 {trip.date} · {trip.time}
               </p>

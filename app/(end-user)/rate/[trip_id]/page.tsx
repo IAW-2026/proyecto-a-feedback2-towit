@@ -154,7 +154,7 @@ export default async function RateTripPage({ params }: PageProps) {
 							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
 								Vehículo
 							</p>
-							<p className="mt-2 text-lg font-bold text-foreground">{trip.vehicle_id}</p>
+							<p className="mt-2 text-lg font-bold text-foreground">{trip.vehicle}</p>
 						</div>
 						<div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border">
 							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">

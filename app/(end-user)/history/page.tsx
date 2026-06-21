@@ -54,7 +54,6 @@ export default async function HistoryPage({ searchParams }: PageProps) {
 
   const { items, total } = await getUserPendingTrips({
     userId,
-    role: role as UserTripRole,
     limit: PAGE_SIZE,
     offset,
   })
@@ -130,7 +129,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
                         {roleLabel} {counterpartName}
                       </p>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {trip.date} · {trip.time}
+                        {trip.date}
                       </p>
                     </div>
                     <Link
