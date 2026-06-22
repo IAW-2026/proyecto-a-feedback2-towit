@@ -17,6 +17,9 @@ type PageProps = {
 	params: Promise<{
 		trip_id: string
 	}>
+	searchParams: Promise<{
+		return_url?: string
+	}>
 }
 
 function getDisplayName(
@@ -47,7 +50,17 @@ function getTagLabel(slug: string | null) {
 	return CUSTOMER_PRESET_TAGS.find((tag) => tag.slug === slug)?.label ?? null
 }
 
-export default async function RateTripPage({ params }: PageProps) {
+function isValidReturnUrl(url: string): boolean {
+	if (url.startsWith('/')) return true
+	try {
+		const parsed = new URL(url)
+		return parsed.origin === 'https://towit-customerview.vercel.app'
+	} catch {
+		return false
+	}
+}
+
+export default async function RateTripPage({ params, searchParams }: PageProps) {
 	const { userId, isAuthenticated } = await auth()
 
 	if (!isAuthenticated || !userId) {
@@ -89,6 +102,11 @@ export default async function RateTripPage({ params }: PageProps) {
 	const existingRating = await getTripRatingByUser(tripId, userId)
 	const existingTagLabel = getTagLabel(existingRating?.tags ?? null)
 
+	const sp = await searchParams
+	const safeReturnUrl = sp.return_url && isValidReturnUrl(sp.return_url)
+		? sp.return_url
+		: null
+
 	async function submitRating(formData: FormData) {
 		'use server'
 
@@ -124,8 +142,8 @@ export default async function RateTripPage({ params }: PageProps) {
 			comment: commentValue,
 		})
 
-		revalidatePath(`/history`)
-		redirect(`/history`)
+		revalidatePath(safeReturnUrl ?? `/history`)
+		redirect(safeReturnUrl ?? `/history`)
 	}
 
 	return (
