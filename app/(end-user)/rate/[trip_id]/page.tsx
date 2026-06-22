@@ -10,6 +10,7 @@ import {
 	type RatingType,
 } from '../../../lib/queries/ratings'
 import { CustomerTagChips } from '../../../ui/customer-tag-chips'
+import { isValidReturnUrl } from '../../../lib/url'
 
 export const dynamic = 'force-dynamic'
 
@@ -48,16 +49,6 @@ function getTagLabel(slug: string | null) {
 		return null
 	}
 	return CUSTOMER_PRESET_TAGS.find((tag) => tag.slug === slug)?.label ?? null
-}
-
-function isValidReturnUrl(url: string): boolean {
-	if (url.startsWith('/')) return true
-	try {
-		const parsed = new URL(url)
-		return parsed.origin === 'https://towit-customerview.vercel.app'
-	} catch {
-		return false
-	}
 }
 
 export default async function RateTripPage({ params, searchParams }: PageProps) {
@@ -222,7 +213,7 @@ export default async function RateTripPage({ params, searchParams }: PageProps) 
 									Volver al historial
 								</Link>
 								<Link
-									href={`/report/${tripId}`}
+									href={safeReturnUrl ? `/report/${tripId}?return_url=${encodeURIComponent(safeReturnUrl)}` : `/report/${tripId}`}
 									className="inline-flex items-center justify-center rounded-lg border-2 border-rose-500/30 bg-rose-500/10 px-6 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-500/50 hover:bg-rose-500/20"
 								>
 									Reportar este viaje
@@ -304,7 +295,7 @@ export default async function RateTripPage({ params, searchParams }: PageProps) 
 									Enviar calificación
 								</button>
 								<Link
-									href={`/report/${tripId}`}
+									href={safeReturnUrl ? `/report/${tripId}?return_url=${encodeURIComponent(safeReturnUrl)}` : `/report/${tripId}`}
 									className="inline-flex items-center justify-center rounded-lg border-2 border-rose-500/30 bg-rose-500/10 px-6 py-3 text-sm font-semibold text-rose-300 transition hover:border-rose-500/50 hover:bg-rose-500/20"
 								>
 									Reportar este viaje

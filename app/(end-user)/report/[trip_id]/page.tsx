@@ -7,10 +7,14 @@ import {
   submitTripReport,
   type ReportReason,
 } from '../../../lib/queries/reports'
+import { isValidReturnUrl } from '../../../lib/url'
 
 type PageProps = {
   params: Promise<{
     trip_id: string
+  }>
+  searchParams: Promise<{
+    return_url?: string
   }>
 }
 
@@ -67,7 +71,7 @@ const reportReasonOptions: Array<{
   },
 ]
 
-export default async function ReportTripPage({ params }: PageProps) {
+export default async function ReportTripPage({ params, searchParams }: PageProps) {
   const { userId, isAuthenticated } = await auth()
 
   if (!isAuthenticated || !userId) {
@@ -102,6 +106,11 @@ export default async function ReportTripPage({ params }: PageProps) {
   const reportedUser = await clerk.users.getUser(reportedClerkId).catch(() => null)
   const reportedUserName = getDisplayName(reportedUser, reportedClerkId)
 
+  const sp = await searchParams
+  const safeReturnUrl = sp.return_url && isValidReturnUrl(sp.return_url)
+    ? sp.return_url
+    : null
+
   async function submitReport(formData: FormData) {
     'use server'
 
@@ -132,8 +141,8 @@ export default async function ReportTripPage({ params }: PageProps) {
       description: typeof description === 'string' ? description : undefined,
     })
 
-    revalidatePath('/history')
-    redirect('/history')
+    revalidatePath(safeReturnUrl ?? '/history')
+    redirect(safeReturnUrl ?? '/history')
   }
 
   return (
