@@ -203,10 +203,33 @@ export async function getLatestRatings(limit = 10): Promise<Rating[]> {
   }))
 }
 
-export async function getRatingsCount(): Promise<number> {
+function combineFilters(filters: ReturnType<typeof sql>[]): ReturnType<typeof sql> | null {
+  if (filters.length === 0) return null
+  return filters.reduce((acc, f) => sql`${acc} AND ${f}`)
+}
+
+function dateFilterClauses(fromDate?: string, toDate?: string) {
+  const clauses: ReturnType<typeof sql>[] = []
+  if (fromDate) clauses.push(sql`created_at >= ${fromDate}::timestamptz`)
+  if (toDate) {
+    clauses.push(
+      sql`created_at < ${toDate}::timestamptz + interval '1 day'`,
+    )
+  }
+  return clauses
+}
+
+export async function getRatingsCount(
+  fromDate?: string,
+  toDate?: string,
+): Promise<number> {
+  const filter = combineFilters(dateFilterClauses(fromDate, toDate))
+  const where = filter ? sql`WHERE ${filter}` : sql``
+
   const rows = await sql<{ count: number }[]>`
     SELECT COUNT(*)::int AS count
     FROM ratings
+    ${where}
   `
 
   return rows[0]?.count ?? 0
@@ -215,10 +238,14 @@ export async function getRatingsCount(): Promise<number> {
 export async function getRatingsPage(
   page: number,
   pageSize: number,
+  fromDate?: string,
+  toDate?: string,
 ): Promise<Rating[]> {
   const safePage = Math.max(1, Math.floor(page))
   const safeSize = Math.max(1, Math.floor(pageSize))
   const offset = (safePage - 1) * safeSize
+  const filter = combineFilters(dateFilterClauses(fromDate, toDate))
+  const where = filter ? sql`WHERE ${filter}` : sql``
 
   const rows = await sql<RatingRow[]>`
     SELECT
@@ -232,6 +259,7 @@ export async function getRatingsPage(
       rated_clerk_id,
       created_at
     FROM ratings
+    ${where}
     ORDER BY created_at DESC, id DESC
     LIMIT ${safeSize}
     OFFSET ${offset}
@@ -278,10 +306,17 @@ export async function getLatestReports(limit = 10): Promise<Report[]> {
   }))
 }
 
-export async function getReportsCount(): Promise<number> {
+export async function getReportsCount(
+  fromDate?: string,
+  toDate?: string,
+): Promise<number> {
+  const filter = combineFilters(dateFilterClauses(fromDate, toDate))
+  const where = filter ? sql`WHERE ${filter}` : sql``
+
   const rows = await sql<{ count: number }[]>`
     SELECT COUNT(*)::int AS count
     FROM reports
+    ${where}
   `
 
   return rows[0]?.count ?? 0
@@ -290,10 +325,14 @@ export async function getReportsCount(): Promise<number> {
 export async function getReportsPage(
   page: number,
   pageSize: number,
+  fromDate?: string,
+  toDate?: string,
 ): Promise<Report[]> {
   const safePage = Math.max(1, Math.floor(page))
   const safeSize = Math.max(1, Math.floor(pageSize))
   const offset = (safePage - 1) * safeSize
+  const filter = combineFilters(dateFilterClauses(fromDate, toDate))
+  const where = filter ? sql`WHERE ${filter}` : sql``
 
   const rows = await sql<ReportRow[]>`
     SELECT
@@ -306,6 +345,7 @@ export async function getReportsPage(
       reported_clerk_id,
       created_at
     FROM reports
+    ${where}
     ORDER BY created_at DESC, id DESC
     LIMIT ${safeSize}
     OFFSET ${offset}

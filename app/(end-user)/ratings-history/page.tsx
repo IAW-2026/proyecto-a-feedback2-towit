@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { sql } from '../../lib/db'
+import DateRangeFilter from '../../ui/date-range-filter'
 
 const PAGE_SIZE = 10
 
@@ -12,10 +13,17 @@ type RatingRow = {
   created_at: string
 }
 
+function qs(params: Record<string, string | undefined>): string {
+  const parts = Object.entries(params).filter(
+    ([, v]) => v !== undefined && v !== '',
+  ) as [string, string][]
+  return parts.length > 0 ? `?${new URLSearchParams(parts).toString()}` : ''
+}
+
 export default async function HistoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; from?: string; to?: string }>
 }) {
   const { userId, isAuthenticated } = await auth()
 
@@ -23,20 +31,29 @@ export default async function HistoryPage({
     redirect('/auth/sign-in')
   }
 
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, from, to } = await searchParams
   const currentPage = Math.max(1, parseInt(pageParam ?? '1', 10) || 1)
   const offset = (currentPage - 1) * PAGE_SIZE
 
-  const [countResult, trips] = await Promise.all([
+  const baseCondition = sql`rater_clerk_id = ${userId}`
+  const dateClauses: ReturnType<typeof sql>[] = []
+  if (from) dateClauses.push(sql`created_at >= ${from}::timestamptz`)
+  if (to) dateClauses.push(sql`created_at < ${to}::timestamptz + interval '1 day'`)
+  const allConditions =
+    dateClauses.length > 0
+      ? sql`${baseCondition} AND ${dateClauses.reduce((acc, f) => sql`${acc} AND ${f}`)}`
+      : baseCondition
+
+  const [countResult, ratings] = await Promise.all([
     sql<{ count: number }[]>`
       SELECT COUNT(*)::int AS count
       FROM ratings
-      WHERE rater_clerk_id = ${userId}
+      WHERE ${allConditions}
     `,
     sql<RatingRow[]>`
       SELECT trip_id, rating, type, created_at
       FROM ratings
-      WHERE rater_clerk_id = ${userId}
+      WHERE ${allConditions}
       ORDER BY created_at DESC
       LIMIT ${PAGE_SIZE}
       OFFSET ${offset}
@@ -61,35 +78,36 @@ export default async function HistoryPage({
           </p>
         </header>
 
+        <DateRangeFilter basePath="/ratings-history" />
+
         <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-          {trips.length === 0 ? (
+          {ratings.length === 0 ? (
             <p className="px-6 py-10 text-center text-sm text-muted-foreground">
               No has calificado ningún viaje aún.
             </p>
           ) : (
             <ul className="divide-y divide-border">
-              {trips.map((trip) => (
+              {ratings.map((rating) => (
                 <li
-                  key={trip.trip_id}
+                  key={rating.trip_id}
                   className="px-6 py-4 first:pt-6 last:pb-6"
                 >
                   <Link
-                    href={`/rate/${trip.trip_id}`}
+                    href={`/rate/${rating.trip_id}`}
                     className="flex w-full items-center justify-between text-inherit no-underline"
                   >
                     <div className="flex flex-col gap-1">
                       <span className="text-sm font-bold text-foreground">
-                        Trip {trip.trip_id}
+                        Trip {rating.trip_id}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {trip.type === 'tower_to_customer' ? 'Remolcaste' : 'Fue remolcado'}
-                        {' · '}
-                        {new Date(trip.created_at).toLocaleDateString()}
+                        {'Calificado el '}
+                        {new Date(rating.created_at).toLocaleDateString()}
                       </span>
                     </div>
 
                     <span className="rounded-full border border-border bg-muted px-3 py-1 text-sm font-bold text-foreground">
-                      {trip.rating} <span className="text-brand-yellow">★</span>
+                      {rating.rating} <span className="text-brand-yellow">★</span>
                     </span>
                   </Link>
                 </li>
@@ -102,7 +120,7 @@ export default async function HistoryPage({
           <nav className="flex items-center justify-between text-sm">
             {currentPage > 1 ? (
               <Link
-                href={`/ratings-history?page=${currentPage - 1}`}
+                href={`/ratings-history${qs({ page: String(currentPage - 1), from, to })}`}
                 className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
                 ← Anterior
@@ -117,7 +135,7 @@ export default async function HistoryPage({
 
             {currentPage < totalPages ? (
               <Link
-                href={`/ratings-history?page=${currentPage + 1}`}
+                href={`/ratings-history${qs({ page: String(currentPage + 1), from, to })}`}
                 className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
                 Siguiente →

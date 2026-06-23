@@ -8,6 +8,7 @@ import {
   REPORT_STATUS_TONE,
   type Report,
 } from '../../lib/queries/admin-dashboard'
+import DateRangeFilter from '../../ui/date-range-filter'
 
 export const dynamic = 'force-dynamic'
 
@@ -48,8 +49,15 @@ function formatDateTime(iso: string): string {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
+function qs(params: Record<string, string | undefined>): string {
+  const parts = Object.entries(params).filter(
+    ([, v]) => v !== undefined && v !== '',
+  ) as [string, string][]
+  return parts.length > 0 ? `?${new URLSearchParams(parts).toString()}` : ''
+}
+
 type PageProps = {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; from?: string; to?: string }>
 }
 
 export default async function AdminReportsPage({ searchParams }: PageProps) {
@@ -68,13 +76,13 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
     redirect('/')
   }
 
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, from, to } = await searchParams
   const currentPage = Math.max(1, parseInt(pageParam ?? '1', 10) || 1)
   const offset = (currentPage - 1) * PAGE_SIZE
 
   const [totalCount, reports] = await Promise.all([
-    getReportsCount(),
-    getReportsPage(currentPage, PAGE_SIZE),
+    getReportsCount(from, to),
+    getReportsPage(currentPage, PAGE_SIZE, from, to),
   ])
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
@@ -107,6 +115,8 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
             Listado completo de reportes registrados en el sistema.
           </p>
         </header>
+
+        <DateRangeFilter basePath="/admin/reports" />
 
         <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4">
@@ -178,7 +188,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
             <nav className="flex items-center justify-between gap-3 border-t border-border px-6 py-4 text-sm">
               {safePage > 1 ? (
                 <Link
-                  href={`/admin/reports?page=${safePage - 1}`}
+                  href={`/admin/reports${qs({ page: String(safePage - 1), from, to })}`}
                   className="rounded-lg border border-border bg-muted px-4 py-2 font-medium text-foreground transition hover:bg-card"
                 >
                   ← Anterior
@@ -193,7 +203,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
 
               {safePage < totalPages ? (
                 <Link
-                  href={`/admin/reports?page=${safePage + 1}`}
+                  href={`/admin/reports${qs({ page: String(safePage + 1), from, to })}`}
                   className="rounded-lg border border-border bg-muted px-4 py-2 font-medium text-foreground transition hover:bg-card"
                 >
                   Siguiente →

@@ -73,8 +73,10 @@ export async function getUserPendingTrips(params: {
   userId: string
   limit: number
   offset: number
+  fromDate?: string
+  toDate?: string
 }): Promise<{ items: TripData[]; total: number }> {
-  const { userId, limit, offset } = params
+  const { userId, limit, offset, fromDate, toDate } = params
   const trips = await getUserTrips(userId)
 
   const ratingResults = await Promise.all(
@@ -83,8 +85,15 @@ export async function getUserPendingTrips(params: {
 
   const pendingTrips = trips.filter((_, index) => ratingResults[index] == null)
 
-  const total = pendingTrips.length
-  const items = pendingTrips.slice(offset, offset + limit)
+  // Filtro por fecha (en memoria, porque los viajes vienen de API externa)
+  const filtered = pendingTrips.filter((trip) => {
+    if (fromDate && trip.date < fromDate) return false
+    if (toDate && trip.date > toDate) return false
+    return true
+  })
+
+  const total = filtered.length
+  const items = filtered.slice(offset, offset + limit)
 
   return { items, total }
 

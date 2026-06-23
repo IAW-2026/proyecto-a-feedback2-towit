@@ -3,13 +3,21 @@ import { auth, clerkClient } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { getUserPendingTrips, type UserTripRole } from '../../lib/queries/trips'
 import { resolveDisplayNames } from '../../lib/queries/users'
+import DateRangeFilter from '../../ui/date-range-filter'
 
 export const dynamic = 'force-dynamic'
 
 const PAGE_SIZE = 10
 
 type PageProps = {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; from?: string; to?: string }>
+}
+
+function qs(params: Record<string, string | undefined>): string {
+  const parts = Object.entries(params).filter(
+    ([, v]) => v !== undefined && v !== '',
+  ) as [string, string][]
+  return parts.length > 0 ? `?${new URLSearchParams(parts).toString()}` : ''
 }
 
 export default async function HistoryPage({ searchParams }: PageProps) {
@@ -48,7 +56,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
     )
   }
 
-  const { page: pageParam } = await searchParams
+  const { page: pageParam, from, to } = await searchParams
   const currentPage = Math.max(1, parseInt(pageParam ?? '1', 10) || 1)
   const offset = (currentPage - 1) * PAGE_SIZE
 
@@ -56,6 +64,8 @@ export default async function HistoryPage({ searchParams }: PageProps) {
     userId,
     limit: PAGE_SIZE,
     offset,
+    fromDate: from,
+    toDate: to,
   })
 
   const displayNames = await resolveDisplayNames(
@@ -88,6 +98,8 @@ export default async function HistoryPage({ searchParams }: PageProps) {
             Ver historial →
           </Link>
         </header>
+
+        <DateRangeFilter basePath="/history" />
 
         {showEmptyState ? (
           <section className="overflow-hidden rounded-2xl border border-border bg-card p-10 text-center shadow-sm">
@@ -149,7 +161,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
           <nav className="flex flex-wrap items-center justify-between gap-3 text-sm">
             {currentPage > 1 ? (
               <Link
-                href={`/history?page=${currentPage - 1}`}
+                href={`/history${qs({ page: String(currentPage - 1), from, to })}`}
                 className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
                 ← Anterior
@@ -164,7 +176,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
 
             {currentPage < totalPages ? (
               <Link
-                href={`/history?page=${currentPage + 1}`}
+                href={`/history${qs({ page: String(currentPage + 1), from, to })}`}
                 className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
                 Siguiente →
