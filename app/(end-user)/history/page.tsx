@@ -13,7 +13,7 @@ type PageProps = {
   searchParams: Promise<{ page?: string; from?: string; to?: string }>
 }
 
-function qs(params: Record<string, string | undefined>): string {
+function buildQueryString(params: Record<string, string | undefined>): string {
   const parts = Object.entries(params).filter(
     ([, v]) => v !== undefined && v !== '',
   ) as [string, string][]
@@ -161,7 +161,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
           <nav className="flex flex-wrap items-center justify-between gap-3 text-sm">
             {currentPage > 1 ? (
               <Link
-                href={`/history${qs({ page: String(currentPage - 1), from, to })}`}
+                href={`/history${buildQueryString({ page: String(currentPage - 1), from, to })}`}
                 className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
                 ← Anterior
@@ -176,7 +176,7 @@ export default async function HistoryPage({ searchParams }: PageProps) {
 
             {currentPage < totalPages ? (
               <Link
-                href={`/history${qs({ page: String(currentPage + 1), from, to })}`}
+                href={`/history${buildQueryString({ page: String(currentPage + 1), from, to })}`}
                 className="rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition hover:border-brand-yellow/40 hover:text-brand-yellow"
               >
                 Siguiente →
