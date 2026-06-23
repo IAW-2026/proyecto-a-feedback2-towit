@@ -1,7 +1,10 @@
 import { sql } from '../../../../lib/db'
+import { validateApiKey } from '@/app/lib/api-key-auth'
 
-export async function GET(_request: Request, {params} : {params: Promise<{id: string}>}) {
-  
+export async function GET(request: Request, {params} : {params: Promise<{id: string}>}) {
+  const authError = validateApiKey(request)
+  if (authError) return authError
+
   try {
     const rows = await sql<{ avg_rating: number }[]>`
       SELECT avg_rating::float8 AS avg_rating

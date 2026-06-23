@@ -1,4 +1,5 @@
 import { sql } from '../../../../../lib/db'
+import { validateApiKey } from '@/app/lib/api-key-auth'
 
 type RouteContext = {
   params: Promise<{
@@ -7,7 +8,10 @@ type RouteContext = {
   }>
 }
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
+  const authError = validateApiKey(request)
+  if (authError) return authError
+
   const params = await context.params;
   try {
     const rows = await sql<{ rating: number }[]>`
