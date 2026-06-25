@@ -15,10 +15,11 @@ export async function GET(request: Request) {
     const pageSize = Math.min(100, Math.max(1, parseInt(searchParams.get('pageSize') ?? '10', 10) || 10))
     const from = searchParams.get('from') ?? undefined
     const to = searchParams.get('to') ?? undefined
+    const search = searchParams.get('search') ?? undefined
 
     const [data, total] = await Promise.all([
-      getRatingsPage(page, pageSize, from, to),
-      getRatingsCount(from, to),
+      getRatingsPage(page, pageSize, from, to, search),
+      getRatingsCount(from, to, search),
     ])
 
     return Response.json({ data, total, page, pageSize })

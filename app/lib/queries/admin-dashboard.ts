@@ -219,11 +219,27 @@ function dateFilterClauses(fromDate?: string, toDate?: string) {
   return clauses
 }
 
+function searchFilterClauses(search?: string) {
+  if (!search) return []
+
+  const pattern = `%${search}%`
+  return [
+    sql`(id::text ILIKE ${pattern}
+      OR trip_id::text ILIKE ${pattern}
+      OR rater_clerk_id ILIKE ${pattern}
+      OR rated_clerk_id ILIKE ${pattern})`,
+  ]
+}
+
 export async function getRatingsCount(
   fromDate?: string,
   toDate?: string,
+  search?: string,
 ): Promise<number> {
-  const filter = combineFilters(dateFilterClauses(fromDate, toDate))
+  const filter = combineFilters([
+    ...dateFilterClauses(fromDate, toDate),
+    ...searchFilterClauses(search),
+  ])
   const where = filter ? sql`WHERE ${filter}` : sql``
 
   const rows = await sql<{ count: number }[]>`
@@ -240,11 +256,15 @@ export async function getRatingsPage(
   pageSize: number,
   fromDate?: string,
   toDate?: string,
+  search?: string,
 ): Promise<Rating[]> {
   const safePage = Math.max(1, Math.floor(page))
   const safeSize = Math.max(1, Math.floor(pageSize))
   const offset = (safePage - 1) * safeSize
-  const filter = combineFilters(dateFilterClauses(fromDate, toDate))
+  const filter = combineFilters([
+    ...dateFilterClauses(fromDate, toDate),
+    ...searchFilterClauses(search),
+  ])
   const where = filter ? sql`WHERE ${filter}` : sql``
 
   const rows = await sql<RatingRow[]>`
