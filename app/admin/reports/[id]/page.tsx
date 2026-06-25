@@ -9,16 +9,11 @@ import {
   updateReportStatus,
   type EditableReportStatus,
 } from '../../../lib/queries/admin-dashboard'
+import { getReasonLabel } from '../page'
 
 export const dynamic = 'force-dynamic'
 
-export const REASON_LABEL: Record<string, string> = {
-  unsafe_driving_or_towing: 'Conducción o remolque inseguro',
-  no_show_or_abandoned_trip: 'No se presentó o abandonó el viaje',
-  inappropriate_behavior: 'Comportamiento inapropiado',
-  vehicle_or_trip_mismatch: 'Vehículo o viaje no coincidente',
-  other: 'Otro',
-}
+
 
 export const STATUS_LABEL: Record<EditableReportStatus, string> = {
   unresolved: 'Sin resolver',
@@ -39,10 +34,6 @@ const DARK_STATUS_TONE: Record<string, string> = {
   resolved: 'bg-emerald-500/10 text-emerald-300 ring-emerald-500/20',
   pending: 'bg-amber-500/10 text-amber-300 ring-amber-500/20',
   in_review: 'bg-sky-500/10 text-sky-300 ring-sky-500/20',
-}
-
-function getReasonLabel(reason: string): string {
-  return REASON_LABEL[reason] ?? reason.replace(/_/g, ' ')
 }
 
 function getStatusTone(status: string): string {

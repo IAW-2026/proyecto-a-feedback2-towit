@@ -15,11 +15,11 @@ export const dynamic = 'force-dynamic'
 const PAGE_SIZE = 10
 
 const REASON_LABEL: Record<string, string> = {
-  unsafe_driving_or_towing: 'Unsafe driving or towing',
-  no_show_or_abandoned_trip: 'No-show or abandoned trip',
-  inappropriate_behavior: 'Inappropriate behavior',
-  vehicle_or_trip_mismatch: 'Vehicle or trip mismatch',
-  other: 'Other',
+  unsafe_driving_or_towing: 'Conducción o remolque inseguro',
+  no_show_or_abandoned_trip: 'No se presentó o abandonó el viaje',
+  inappropriate_behavior: 'Comportamiento inapropiado',
+  vehicle_or_trip_mismatch: 'Vehículo o viaje no coincidente',
+  other: 'Otro',
 }
 
 const DARK_STATUS_TONE: Record<string, string> = {
@@ -31,7 +31,7 @@ const DARK_STATUS_TONE: Record<string, string> = {
   in_review: 'bg-sky-500/10 text-sky-300 ring-sky-500/20',
 }
 
-function getReasonLabel(reason: string): string {
+export function getReasonLabel(reason: string): string {
   return REASON_LABEL[reason] ?? reason.replace(/_/g, ' ')
 }
 
