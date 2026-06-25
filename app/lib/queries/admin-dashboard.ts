@@ -219,7 +219,7 @@ function dateFilterClauses(fromDate?: string, toDate?: string) {
   return clauses
 }
 
-function searchFilterClauses(search?: string) {
+function searchFilterClauses(search?: string): ReturnType<typeof sql>[] {
   if (!search) return []
 
   const pattern = `%${search}%`
@@ -228,6 +228,18 @@ function searchFilterClauses(search?: string) {
       OR trip_id::text ILIKE ${pattern}
       OR rater_clerk_id ILIKE ${pattern}
       OR rated_clerk_id ILIKE ${pattern})`,
+  ]
+}
+
+function searchReportsFilterClauses(search?: string): ReturnType<typeof sql>[] {
+  if (!search) return []
+
+  const pattern = `%${search}%`
+  return [
+    sql`(id::text ILIKE ${pattern}
+      OR trip_id::text ILIKE ${pattern}
+      OR reporter_clerk_id ILIKE ${pattern}
+      OR reported_clerk_id ILIKE ${pattern})`,
   ]
 }
 
@@ -329,8 +341,12 @@ export async function getLatestReports(limit = 10): Promise<Report[]> {
 export async function getReportsCount(
   fromDate?: string,
   toDate?: string,
+  search?: string,
 ): Promise<number> {
-  const filter = combineFilters(dateFilterClauses(fromDate, toDate))
+  const filter = combineFilters([
+    ...dateFilterClauses(fromDate, toDate),
+    ...searchReportsFilterClauses(search),
+  ])
   const where = filter ? sql`WHERE ${filter}` : sql``
 
   const rows = await sql<{ count: number }[]>`
@@ -347,11 +363,15 @@ export async function getReportsPage(
   pageSize: number,
   fromDate?: string,
   toDate?: string,
+  search?: string,
 ): Promise<Report[]> {
   const safePage = Math.max(1, Math.floor(page))
   const safeSize = Math.max(1, Math.floor(pageSize))
   const offset = (safePage - 1) * safeSize
-  const filter = combineFilters(dateFilterClauses(fromDate, toDate))
+  const filter = combineFilters([
+    ...dateFilterClauses(fromDate, toDate),
+    ...searchReportsFilterClauses(search),
+  ])
   const where = filter ? sql`WHERE ${filter}` : sql``
 
   const rows = await sql<ReportRow[]>`
@@ -485,6 +505,85 @@ export async function getRatingDetailById(id: number): Promise<RatingDetail | nu
       time: trip.date,
     }
   }
+}
+
+export type AverageRating = {
+  clerkId: string
+  avgRating: number
+  totalRatings: number
+  updatedAt: string
+  displayName: string
+}
+
+type AverageRatingRow = {
+  clerk_id: string
+  avg_rating: number
+  total_ratings: number
+  updated_at: Date
+}
+
+function avgRatingSearchFilterClauses(search?: string): ReturnType<typeof sql>[] {
+  if (!search) return []
+  const pattern = `%${search}%`
+  return [
+    sql`(clerk_id ILIKE ${pattern})`,
+  ]
+}
+
+export async function getAverageRatingsCount(
+  search?: string,
+): Promise<number> {
+  const filter = combineFilters([
+    ...avgRatingSearchFilterClauses(search),
+  ])
+  const where = filter ? sql`WHERE ${filter}` : sql``
+
+  const rows = await sql<{ count: number }[]>`
+    SELECT COUNT(*)::int AS count
+    FROM average_ratings
+    ${where}
+  `
+
+  return rows[0]?.count ?? 0
+}
+
+export async function getAverageRatingsPage(
+  page: number,
+  pageSize: number,
+  search?: string,
+): Promise<AverageRating[]> {
+  const safePage = Math.max(1, Math.floor(page))
+  const safeSize = Math.max(1, Math.floor(pageSize))
+  const offset = (safePage - 1) * safeSize
+
+  const filter = combineFilters([
+    ...avgRatingSearchFilterClauses(search),
+  ])
+  const where = filter ? sql`WHERE ${filter}` : sql``
+
+  const rows = await sql<AverageRatingRow[]>`
+    SELECT
+      clerk_id,
+      avg_rating::float8 AS avg_rating,
+      total_ratings,
+      updated_at
+    FROM average_ratings
+    ${where}
+    ORDER BY total_ratings DESC, avg_rating DESC
+    LIMIT ${safeSize}
+    OFFSET ${offset}
+  `
+
+  const clerkIds = rows.map((r) => r.clerk_id)
+  const displayNames = await resolveDisplayNames(clerkIds)
+
+  return rows.map((row) => ({
+    clerkId: row.clerk_id,
+    avgRating: row.avg_rating,
+    totalRatings: row.total_ratings,
+    updatedAt: row.updated_at.toISOString(),
+    displayName: displayNames[row.clerk_id] ?? row.clerk_id,
+  }))
 }
 
 export async function getDashboardSnapshot(
