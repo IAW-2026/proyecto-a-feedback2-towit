@@ -82,6 +82,64 @@ export async function getTripRatingByUser(tripId: number, raterClerkId: string) 
   return rows[0] ?? null
 }
 
+type DeleteRatingResult = {
+  id: number
+  tripId: number
+  ratedClerkId: string
+  rating: number
+}
+
+export async function deleteRatingById(
+  id: number,
+): Promise<DeleteRatingResult | null> {
+  const rows = await sql<{ id: number; trip_id: number; rated_clerk_id: string; rating: number }[]>`
+    SELECT id, trip_id, rated_clerk_id, rating
+    FROM ratings
+    WHERE id = ${id}
+    LIMIT 1
+  `
+
+  const rating = rows[0]
+  if (!rating) return null
+
+  await sql.begin(async (transaction) => {
+    await transaction`
+      DELETE FROM ratings
+      WHERE id = ${id}
+    `
+
+    const remaining = await transaction<{ avg_rating: number; total_ratings: number }[]>`
+      SELECT AVG(rating)::float8 AS avg_rating, COUNT(*)::int AS total_ratings
+      FROM ratings
+      WHERE rated_clerk_id = ${rating.rated_clerk_id}
+    `
+
+    if (remaining[0] && remaining[0].total_ratings > 0) {
+      await transaction`
+        INSERT INTO average_ratings (clerk_id, avg_rating, total_ratings, updated_at)
+        VALUES (${rating.rated_clerk_id}, ${remaining[0].avg_rating}, ${remaining[0].total_ratings}, NOW())
+        ON CONFLICT (clerk_id)
+        DO UPDATE SET
+          avg_rating = EXCLUDED.avg_rating,
+          total_ratings = EXCLUDED.total_ratings,
+          updated_at = NOW()
+      `
+    } else {
+      await transaction`
+        DELETE FROM average_ratings
+        WHERE clerk_id = ${rating.rated_clerk_id}
+      `
+    }
+  })
+
+  return {
+    id: rating.id,
+    tripId: rating.trip_id,
+    ratedClerkId: rating.rated_clerk_id,
+    rating: rating.rating,
+  }
+}
+
 export async function submitTripRating(input: SubmitRatingInput) {
   if (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 5) {
     throw new Error('Invalid rating value')

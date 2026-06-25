@@ -46,6 +46,7 @@ async function getUserTrips(userId: string): Promise<TripData[]> {
   }
   const response = await fetch(`${tripsApiUrl}/${userId}`, {method: 'GET', headers: { 'x-api-key': process.env.INTERNAL_API_SECRET ?? '' }})
   const trips: TripRow[] = await response.json()
+  console.log("trips:", trips, "userId:", userId)
   const tripsWithVehicle = await Promise.all(trips.map(async (trip) => {
     const vehicleResponse = await fetch(`${vehiclesApiUrl}/${trip?.vehicle_id}`, {method: 'GET', headers: { 'x-api-key': process.env.INTERNAL_API_SECRET ?? '' }})
     const vehicle = await vehicleResponse.json()
