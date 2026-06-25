@@ -10,6 +10,7 @@ import {
 	type RatingType,
 } from '../../../lib/queries/ratings'
 import { CustomerTagChips } from '../../../ui/customer-tag-chips'
+import { StarRating } from '../../../ui/star-rating'
 import { isValidReturnUrl } from '../../../lib/url'
 
 export const dynamic = 'force-dynamic'
@@ -230,27 +231,7 @@ export default async function RateTripPage({ params, searchParams }: PageProps) 
 								<legend className="text-sm font-bold text-foreground">
 									Elige una calificación
 								</legend>
-								<div className="mt-4 flex flex-wrap items-end gap-3">
-									{[1, 2, 3, 4, 5].map((value) => (
-										<div key={value} className="flex flex-col items-center gap-2">
-											<input
-												id={`rating-${value}`}
-												type="radio"
-												name="rating"
-												value={value}
-												required
-												className="peer sr-only"
-											/>
-											<label
-												htmlFor={`rating-${value}`}
-												className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-2xl border border-border bg-card text-3xl text-muted-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-brand-yellow/40 hover:text-brand-yellow peer-checked:border-brand-yellow peer-checked:bg-brand-yellow/10 peer-checked:text-brand-yellow"
-											>
-												★
-											</label>
-											<span className="text-xs font-medium text-muted-foreground">{value}</span>
-										</div>
-									))}
-								</div>
+								<StarRating name="rating" required />
 							</fieldset>
 
 							{isCustomer ? (
